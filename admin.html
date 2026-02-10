@@ -393,9 +393,15 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Registration Number *</label>
-                    <input type="text" id="regNumber" required placeholder="e.g. BCSF/001/2022">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Registration Number *</label>
+                        <input type="text" id="regNumber" required placeholder="e.g. BCSF/001/2022">
+                    </div>
+                    <div class="form-group">
+                        <label>National ID/Birth Cert Number *</label>
+                        <input type="text" id="idNumber" required placeholder="Enter ID or Birth Cert No." minlength="7" maxlength="12" pattern="[A-Za-z0-9]+">
+                    </div>
                 </div>
 
                 <div class="form-row">
@@ -405,7 +411,7 @@
                     </div>
                     <div class="form-group">
                         <label>Phone Number</label>
-                        <input type="tel" id="phone" placeholder="+254 700 000 000">
+                        <input type="tel" id="phone" placeholder="+254 700 000 000" maxlength="13">
                     </div>
                 </div>
 
@@ -465,7 +471,7 @@
 
                 <div class="form-group">
                     <label>Emergency Contact Phone</label>
-                    <input type="tel" id="emergencyContactPhone" placeholder="Guardian's phone">
+                    <input type="tel" id="emergencyContactPhone" placeholder="Guardian's phone" maxlength="13">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Add Student</button>

@@ -47,7 +47,18 @@ const toastContainer = document.getElementById('toastContainer');
 document.addEventListener('DOMContentLoaded', () => {
     fetchStudents();
     setupEventListeners();
+    setAgeRestriction();
 });
+
+// Set minimum age of 12 years for date of birth
+function setAgeRestriction() {
+    const dateOfBirthInput = document.getElementById('dateOfBirth');
+    if (dateOfBirthInput) {
+        const today = new Date();
+        const minDate = new Date(today.getFullYear() - 12, today.getMonth(), today.getDate());
+        dateOfBirthInput.max = minDate.toISOString().split('T')[0];
+    }
+}
 
 // Event Listeners
 function setupEventListeners() {
@@ -60,12 +71,60 @@ function setupEventListeners() {
     // Search
     searchInput.addEventListener('input', handleSearch);
     
+    // Phone formatting for Kenyan numbers
+    const phoneInput = document.getElementById('phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('blur', formatKenyanPhone);
+    }
+    
+    const emergencyPhoneInput = document.getElementById('emergencyContactPhone');
+    if (emergencyPhoneInput) {
+        emergencyPhoneInput.addEventListener('blur', formatKenyanPhone);
+    }
+    
     // Close modal on outside click
     document.getElementById('editModal').addEventListener('click', (e) => {
         if (e.target.classList.contains('modal')) {
             closeEditModal();
         }
     });
+}
+
+// Format Kenyan phone numbers
+function formatKenyanPhone(e) {
+    const input = e.target;
+    let phone = input.value.trim();
+    
+    if (!phone) return;
+    
+    // Remove any spaces or dashes
+    phone = phone.replace(/[\s-]/g, '');
+    
+    // Convert 07XX format to +254XX format
+    if (/^07\d{8}$/.test(phone)) {
+        phone = '+254' + phone.substring(1);
+    }
+    
+    // Validate format
+    if (/^\+254\d{9}$/.test(phone)) {
+        input.value = phone;
+    } else if (!/^\+254/.test(phone) && /^07\d{8}$/.test(phone)) {
+        // Already handled above, but keep for safety
+        input.value = '+254' + phone.substring(1);
+    }
+}
+
+// Validate Kenyan phone number
+function validateKenyanPhone(phone) {
+    if (!phone) return true; // Empty is allowed
+    const cleaned = phone.replace(/[\s-]/g, '');
+    return /^(\+254\d{9}|07\d{8})$/.test(cleaned);
+}
+
+// Validate ID number (alphanumeric, 7-12 characters)
+function validateIdNumber(idNumber) {
+    if (!idNumber) return false;
+    return /^[A-Za-z0-9]{7,12}$/.test(idNumber);
 }
 
 // API Functions
@@ -105,19 +164,41 @@ async function handleAddStudent(e) {
     submitBtn.disabled = true;
     
     try {
+        // Get form values
+        const idNumber = document.getElementById('idNumber').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const emergencyPhone = document.getElementById('emergencyContactPhone').value.trim();
+        
+        // Validate ID Number
+        if (!validateIdNumber(idNumber)) {
+            throw new Error('ID/Birth Certificate Number must be 7-12 alphanumeric characters');
+        }
+        
+        // Validate phone numbers
+        if (!validateKenyanPhone(phone)) {
+            throw new Error('Please enter a valid Kenyan phone number (+254XXXXXXXXX or 07XXXXXXXX)');
+        }
+        
+        if (!validateKenyanPhone(emergencyPhone)) {
+            throw new Error('Please enter a valid Guardian phone number (+254XXXXXXXXX or 07XXXXXXXX)');
+        }
+        
         const studentData = {
             firstName: document.getElementById('firstName').value.trim(),
             lastName: document.getElementById('lastName').value.trim(),
             regNumber: document.getElementById('regNumber').value.trim().toUpperCase(),
+            idNumber: idNumber,
             email: document.getElementById('email').value.trim().toLowerCase(),
-            phone: document.getElementById('phone').value.trim(),
+            phone: phone,
             course: document.getElementById('course').value,
             yearOfStudy: document.getElementById('yearOfStudy').value,
             dateOfBirth: document.getElementById('dateOfBirth').value,
             gender: document.getElementById('gender').value,
             address: document.getElementById('address').value.trim(),
             emergencyContactName: document.getElementById('emergencyContactName').value.trim(),
-            emergencyContactPhone: document.getElementById('emergencyContactPhone').value.trim(),
+            emergencyContactPhone: emergencyPhone,
+            username: document.getElementById('regNumber').value.trim().toUpperCase(),
+            password: idNumber, // Default password is ID number
             status: 'Active',
             createdBy: 'admin'
         };
@@ -133,7 +214,7 @@ async function handleAddStudent(e) {
         const result = await response.json();
         
         if (result.success) {
-            showToast('Student added successfully!', 'success');
+            showToast('Student added successfully! Login credentials: Username=' + studentData.username + ', Password=' + studentData.password, 'success');
             addStudentForm.reset();
             students.unshift(result.data);
             filteredStudents = [...students];
