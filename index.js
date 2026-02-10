@@ -102,11 +102,11 @@ async function handleLogin() {
             isAdmin: true
         };
         localStorage.setItem('khu_currentUser', JSON.stringify(currentUser));
-        showMainContent();
-        updateUserDisplay();
         errorMsg.style.display = 'none';
         document.getElementById('regNo').value = '';
         document.getElementById('idNumber').value = '';
+        // Redirect to admin page
+        window.location.href = 'admin.html';
         return;
     }
     
