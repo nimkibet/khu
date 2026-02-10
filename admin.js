@@ -2,7 +2,7 @@
 // Uses Firebase Firestore for data persistence
 
 // API Configuration - Points to local Express server
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = '/api';
 
 // Initialize Firebase for direct Firestore access (optional)
 let firebaseApp;
