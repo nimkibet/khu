@@ -91,6 +91,25 @@ async function handleLogin() {
         return;
     }
     
+    // Check for admin login (special case)
+    if (regNo === 'ADMIN' && idNumber === 'admin123') {
+        currentUser = {
+            id: 'admin',
+            firstName: 'Admin',
+            lastName: 'Administrator',
+            regNumber: 'ADMIN',
+            course: 'Administrator',
+            isAdmin: true
+        };
+        localStorage.setItem('khu_currentUser', JSON.stringify(currentUser));
+        showMainContent();
+        updateUserDisplay();
+        errorMsg.style.display = 'none';
+        document.getElementById('regNo').value = '';
+        document.getElementById('idNumber').value = '';
+        return;
+    }
+    
     try {
         // Fetch all students to find matching credentials
         const response = await fetch(`${API_BASE_URL}/students`, {
@@ -145,6 +164,7 @@ function updateUserDisplay() {
     const displayCourse = document.getElementById('displayUserCourse');
     const postInput = document.querySelector('.post-input');
     const userAvatar = document.querySelector('.user-avatar');
+    const adminLink = document.getElementById('adminLink');
     
     if (currentUser) {
         if (displayName) displayName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
@@ -153,6 +173,10 @@ function updateUserDisplay() {
         if (userAvatar) {
             const initials = `${currentUser.firstName?.[0] || ''}${currentUser.lastName?.[0] || ''}`.toUpperCase();
             userAvatar.textContent = initials;
+        }
+        // Show admin link for admin users
+        if (adminLink) {
+            adminLink.style.display = currentUser.isAdmin ? 'flex' : 'none';
         }
     }
 }
