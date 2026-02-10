@@ -568,12 +568,12 @@
 
     <script>
         // Session Check - Redirect to login if not admin
-        const savedUser = localStorage.getItem('khu_user');
+        const savedUser = localStorage.getItem('khu_currentUser');
         if (!savedUser) {
             window.location.href = 'index.html';
         } else {
             const user = JSON.parse(savedUser);
-            if (user.userType !== 'admin') {
+            if (!user.isAdmin) {
                 window.location.href = 'index.html';
             }
         }
