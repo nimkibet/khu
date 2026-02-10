@@ -10,7 +10,32 @@ let currentUser = null;
 document.addEventListener('DOMContentLoaded', () => {
     checkLoginStatus();
     initializeChat();
+    setupLoginListeners();
 });
+
+// Setup login form event listeners
+function setupLoginListeners() {
+    const regNoInput = document.getElementById('regNo');
+    const idNumberInput = document.getElementById('idNumber');
+    
+    if (regNoInput) {
+        regNoInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                idNumberInput?.focus();
+            }
+        });
+    }
+    
+    if (idNumberInput) {
+        idNumberInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleLogin();
+            }
+        });
+    }
+}
 
 // Check if user is already logged in
 function checkLoginStatus() {
