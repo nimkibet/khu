@@ -1,0 +1,352 @@
+// Admin Page JavaScript - Student Management
+// Uses Firebase Firestore for data persistence
+
+// API Configuration - Points to local Express server
+const API_BASE_URL = 'http://localhost:3000/api';
+
+// Initialize Firebase for direct Firestore access (optional)
+let firebaseApp;
+let db;
+
+try {
+    // Try to initialize Firebase if config is available
+    if (typeof firebase !== 'undefined' && 
+        import.meta.env?.VITE_FIREBASE_API_KEY && 
+        import.meta.env?.VITE_FIREBASE_API_KEY !== "YOUR_API_KEY") {
+        
+        firebaseApp = firebase.initializeApp({
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+            appId: import.meta.env.VITE_FIREBASE_APP_ID
+        });
+        
+        db = firebaseApp.firestore();
+        console.log('Firebase initialized successfully');
+    } else {
+        console.log('Firebase not configured - using API only mode');
+    }
+} catch (error) {
+    console.log('Firebase initialization skipped:', error.message);
+}
+
+// State
+let students = [];
+let filteredStudents = [];
+
+// DOM Elements
+const addStudentForm = document.getElementById('addStudentForm');
+const editStudentForm = document.getElementById('editStudentForm');
+const studentList = document.getElementById('studentList');
+const searchInput = document.getElementById('searchInput');
+const toastContainer = document.getElementById('toastContainer');
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    fetchStudents();
+    setupEventListeners();
+});
+
+// Event Listeners
+function setupEventListeners() {
+    // Add Student Form
+    addStudentForm.addEventListener('submit', handleAddStudent);
+    
+    // Edit Student Form
+    editStudentForm.addEventListener('submit', handleEditStudent);
+    
+    // Search
+    searchInput.addEventListener('input', handleSearch);
+    
+    // Close modal on outside click
+    document.getElementById('editModal').addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal')) {
+            closeEditModal();
+        }
+    });
+}
+
+// API Functions
+async function fetchStudents() {
+    try {
+        showLoading();
+        
+        const response = await fetch(`${API_BASE_URL}/students`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            students = result.data;
+            filteredStudents = [...students];
+            renderStudents();
+            updateStats();
+        } else {
+            throw new Error(result.error || 'Failed to fetch students');
+        }
+    } catch (error) {
+        console.error('Error fetching students:', error);
+        showEmptyState('Unable to load students. Please check your connection.');
+    }
+}
+
+async function handleAddStudent(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Adding...';
+    submitBtn.disabled = true;
+    
+    try {
+        const studentData = {
+            firstName: document.getElementById('firstName').value.trim(),
+            lastName: document.getElementById('lastName').value.trim(),
+            regNumber: document.getElementById('regNumber').value.trim().toUpperCase(),
+            email: document.getElementById('email').value.trim().toLowerCase(),
+            phone: document.getElementById('phone').value.trim(),
+            course: document.getElementById('course').value,
+            yearOfStudy: document.getElementById('yearOfStudy').value,
+            dateOfBirth: document.getElementById('dateOfBirth').value,
+            gender: document.getElementById('gender').value,
+            address: document.getElementById('address').value.trim(),
+            emergencyContactName: document.getElementById('emergencyContactName').value.trim(),
+            emergencyContactPhone: document.getElementById('emergencyContactPhone').value.trim(),
+            status: 'Active',
+            createdBy: 'admin'
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/students`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(studentData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Student added successfully!', 'success');
+            addStudentForm.reset();
+            students.unshift(result.data);
+            filteredStudents = [...students];
+            renderStudents();
+            updateStats();
+        } else {
+            throw new Error(result.error || 'Failed to add student');
+        }
+    } catch (error) {
+        console.error('Error adding student:', error);
+        showToast(error.message || 'Failed to add student', 'error');
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+async function handleEditStudent(e) {
+    e.preventDefault();
+    
+    const studentId = document.getElementById('editStudentId').value;
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Saving...';
+    submitBtn.disabled = true;
+    
+    try {
+        const studentData = {
+            firstName: document.getElementById('editFirstName').value.trim(),
+            lastName: document.getElementById('editLastName').value.trim(),
+            regNumber: document.getElementById('editRegNumber').value.trim().toUpperCase(),
+            email: document.getElementById('editEmail').value.trim().toLowerCase(),
+            course: document.getElementById('editCourse').value,
+            status: document.getElementById('editStatus').value
+        };
+        
+        const response = await fetch(`${API_BASE_URL}/students?id=${studentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(studentData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Student updated successfully!', 'success');
+            closeEditModal();
+            
+            // Update local data
+            const index = students.findIndex(s => s.id === studentId);
+            if (index !== -1) {
+                students[index] = { ...students[index], ...studentData };
+                filteredStudents = [...students];
+                renderStudents();
+                updateStats();
+            }
+        } else {
+            throw new Error(result.error || 'Failed to update student');
+        }
+    } catch (error) {
+        console.error('Error updating student:', error);
+        showToast(error.message || 'Failed to update student', 'error');
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+async function deleteStudent(studentId) {
+    if (!confirm('Are you sure you want to delete this student? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/students?id=${studentId}`, {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('Student deleted successfully!', 'success');
+            students = students.filter(s => s.id !== studentId);
+            filteredStudents = [...students];
+            renderStudents();
+            updateStats();
+        } else {
+            throw new Error(result.error || 'Failed to delete student');
+        }
+    } catch (error) {
+        console.error('Error deleting student:', error);
+        showToast(error.message || 'Failed to delete student', 'error');
+    }
+}
+
+// UI Functions
+function renderStudents() {
+    if (filteredStudents.length === 0) {
+        showEmptyState('No students found. Add a student to get started.');
+        return;
+    }
+    
+    studentList.innerHTML = filteredStudents.map(student => `
+        <div class="student-item">
+            <div class="student-info">
+                <h4>${escapeHtml(student.firstName)} ${escapeHtml(student.lastName)}</h4>
+                <p>${escapeHtml(student.regNumber)} • ${escapeHtml(student.course || 'N/A')}</p>
+                <p>${escapeHtml(student.email || 'No email')}</p>
+                <span class="status-badge status-${student.status?.toLowerCase() === 'active' ? 'active' : 'inactive'}">
+                    ${student.status || 'Active'}
+                </span>
+            </div>
+            <div class="student-actions">
+                <button class="btn btn-secondary btn-icon" onclick="openEditModal('${student.id}')">Edit</button>
+                <button class="btn btn-danger btn-icon" onclick="deleteStudent('${student.id}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function showEmptyState(message) {
+    studentList.innerHTML = `
+        <div class="empty-state">
+            <div class="empty-state-icon">📋</div>
+            <p>${message}</p>
+        </div>
+    `;
+}
+
+function showLoading() {
+    studentList.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+        </div>
+    `;
+}
+
+function updateStats() {
+    const total = students.length;
+    const active = students.filter(s => s.status?.toLowerCase() === 'active').length;
+    const courses = [...new Set(students.map(s => s.course))].filter(Boolean).length;
+    
+    document.getElementById('totalStudents').textContent = total;
+    document.getElementById('activeStudents').textContent = active;
+    document.getElementById('totalCourses').textContent = courses;
+}
+
+function handleSearch(e) {
+    const searchTerm = e.target.value.toLowerCase().trim();
+    
+    if (!searchTerm) {
+        filteredStudents = [...students];
+    } else {
+        filteredStudents = students.filter(student => 
+            student.firstName?.toLowerCase().includes(searchTerm) ||
+            student.lastName?.toLowerCase().includes(searchTerm) ||
+            student.regNumber?.toLowerCase().includes(searchTerm) ||
+            student.email?.toLowerCase().includes(searchTerm) ||
+            student.course?.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    renderStudents();
+}
+
+// Modal Functions
+function openEditModal(studentId) {
+    const student = students.find(s => s.id === studentId);
+    if (!student) return;
+    
+    document.getElementById('editStudentId').value = studentId;
+    document.getElementById('editFirstName').value = student.firstName || '';
+    document.getElementById('editLastName').value = student.lastName || '';
+    document.getElementById('editRegNumber').value = student.regNumber || '';
+    document.getElementById('editEmail').value = student.email || '';
+    document.getElementById('editCourse').value = student.course || '';
+    document.getElementById('editStatus').value = student.status || 'Active';
+    
+    document.getElementById('editModal').classList.add('active');
+}
+
+function closeEditModal() {
+    document.getElementById('editModal').classList.remove('active');
+}
+
+// Toast Notifications
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span>${type === 'success' ? '✓' : '✕'}</span>
+        <span>${escapeHtml(message)}</span>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideIn 0.3s ease reverse';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// Utility Functions
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Make functions globally accessible
+window.openEditModal = openEditModal;
+window.closeEditModal = closeEditModal;
+window.deleteStudent = deleteStudent;

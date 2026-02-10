@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <title>KENYA HIGHLANDS UNIVERSITY </title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>KENYA HIGHLANDS UNIVERSITY-Be your brother's keeper</title>
+    <style>
+        /* ==== GLOBAL STYLES ==== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: white;
+            min-height: 100vh;
+            color: #050505;
+        }
+
+        /* ==== HEADER ==== */
+        .header {
+            background: white;
+            padding: 8px 16px;
+            box-shadow: 0 2px 4px rgba(42, 7, 198, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0bc311;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        } 
+
+        .nav {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #65676b;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover { background: #f0f2f5; }
+        .nav-btn.active {
+            color: #1877f2;
+            border-bottom: 3px solid #1877f2;
+        }
+
+        /* ==== LAYOUT ==== */
+        .container {
+            max-width: 1400px;
+            margin: 16px auto;
+            padding: 0 16px;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 16px;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 72px;
+            height: fit-content;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-item:hover { background: #e4e6eb; }
+        .sidebar-icon { font-size: 20px; margin-right: 12px; }
+
+        .main-content { display: none; }
+        .main-content.active { display: block; }
+
+        /* ==== SEMESTER BANNER ==== */
+        .semester-banner {
+            background: linear-gradient(135deg, #1877f2, #42b983);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        /* ==== POST CARDS ==== */
+        .create-post {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: linear-gradient(135deg, #1877f2, #42b983);
+            color: white; display: flex; align-items: center;
+            justify-content: center; font-weight: 600; margin-right: 12px;
+        }
+
+        .post-input {
+            flex: 1; background: #f0f2f5; border: none;
+            border-radius: 24px; padding: 12px 16px;
+            font-size: 15px; cursor: pointer; color: #65676b;
+        }
+
+        .post-card {
+            background: white; border-radius: 8px;
+            margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .post-header { display: flex; padding: 16px; }
+        .post-info h4 { font-size: 15px; font-weight: 600; }
+        .post-meta { font-size: 13px; color: #65676b; }
+        .post-content { padding: 0 16px 12px; font-size: 15px; line-height: 1.5; }
+
+        /* ==== COURSES DROPDOWN ==== */
+        .course-card {
+            background: white; border-radius: 8px; padding: 20px;
+            margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .units-dropdown-btn {
+            background: #f0f2f5; border: none; width: 100%;
+            padding: 10px; margin-top: 10px; border-radius: 6px;
+            cursor: pointer; font-weight: 600; text-align: left;
+            display: flex; justify-content: space-between;
+        }
+
+        .units-content { display: none; padding: 10px 0; }
+        .units-content.active { display: block; }
+        .unit-item {
+            background: #f8f9fa; padding: 8px 12px; border-radius: 4px;
+            margin-bottom: 5px; font-size: 14px; border-left: 3px solid #1877f2;
+        }
+
+        /* ==== TIMETABLE ==== */
+        .timetable-table { width: 100%; border-collapse: collapse; background: white; }
+        .timetable-table th { background: #1877f2; color: white; padding: 12px; }
+        .timetable-table td { border: 1px solid #e4e6eb; padding: 12px; text-align: center; }
+        .class-item { background: linear-gradient(135deg, #1877f2, #42b983); color: white; border-radius: 4px; padding: 5px; font-size: 12px; }
+    /*map*/
+    .campus-map {
+    width: 100%;
+    height: 600px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    position: relative;
+    background: #f8fafc; /* Subtle slate background */
+    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+    background-size: 20px 20px; /* Modern grid effect */
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.map-building {
+    position: absolute;
+    background: white;
+    border: 2px solid #2563eb;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #1e293b;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.map-building:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background: #f0f9ff;
+    z-index: 50;
+}
+        /* ==== AI CHAT ==== */
+/* ==== AI CHAT VISUALS ==== */
+/* ---- Updated AI Chat Bubbles ---- */
+.message {
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+/* Aligns your messages to the right */
+.message.user {
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1877f2, #42b983);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.message-bubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* AI styling (Left side, Gray) */
+.message.ai .message-bubble {
+    background: #f0f2f5;
+    color: #1c1e21;
+    border-bottom-left-radius: 4px;
+}
+
+/* User styling (Right side, Blue) */
+.message.user .message-bubble {
+    background: #1877f2;
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+/* ---- AI Input Area Styling ---- */
+.chat-input-area {
+    padding: 16px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    gap: 12px;
+    background: white;
+}
+
+.chat-input {
+    flex: 1;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 12px 20px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.chat-input:focus {
+    border-color: #1877f2;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
+}
+
+.chat-send {
+    background: #1877f2;
+    color: white;
+    border: none;
+    padding: 0 24px;
+    border-radius: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-send:hover {
+    background: #166fe5;
+}
+
+.chat-send:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+}
+
+#floatingLogoutBtn {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #e41e3f; /* Alert Red */
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(228, 30, 63, 0.3);
+    z-index: 999; /* Stays above the Map and AI chat */
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+#floatingLogoutBtn:hover {
+    background-color: #c61a36;
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(228, 30, 63, 0.4);
+}
+
+/* On mobile, show only the icon to save space */
+@media (max-width: 600px) {
+    .logout-text { display: none; }
+    #floatingLogoutBtn {
+        padding: 15px;
+        bottom: 20px;
+        right: 20px;
+    }
+}
+
+        /* ==== MODAL ==== */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; }
+
+        @media (max-width: 1100px) { .container { grid-template-columns: 1fr; } .sidebar { display: none; } }
+    </style>
+</head>
+<body>
+    <div id="loginPage" style="position: fixed; inset: 0; background: white; z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+    <div class="logo" style="margin-bottom: 30px; font-size: 32px;">KHU Portal Login</div>
+    <div class="login-box">
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Registration Number</label>
+            <input type="text" id="regNo" placeholder="e.g. BCSF/001/2022" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+        <div style="margin-bottom: 25px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Password (Phone Number)</label>
+            <input type="password" id="phoneNo" placeholder="Enter phone number" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+        <button onclick="handleLogin()" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Login to Portal
+        </button>
+        <p id="loginError" style="color: #e41e3f; font-size: 13px; margin-top: 15px; text-align: center; display: none;">Invalid credentials.</p>
+    </div>
+</div>
+
+    <div class="header">
+        <div class="logo">KHU-Be your brother's keeper</div>
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('feed', event)">Feed</button>
+            <button class="nav-btn" onclick="showSection('courses', event)">Courses</button>
+            <button class="nav-btn" onclick="showSection('timetable', event)">Timetable</button>
+            <button class="nav-btn" onclick="showSection('map', event)">Campus Map</button>
+            <button class="nav-btn" onclick="showSection('ai', event)">Highlands AI</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+           <div class="sidebar-item">
+    <span class="sidebar-icon">Profile</span>
+    <div>
+        <div id="displayUserName" style="font-weight: 600; font-size: 15px;">Guest User</div>
+        <div id="displayUserCourse" style="font-size: 13px; color: #65676b;">Not Logged In</div>
+        <button onclick="logout()" style="background: none; border: none; color: #e41e3f; font-size: 12px; cursor: pointer; padding: 0; margin-top: 5px; text-decoration: underline; font-family: inherit;">
+            Logout
+        </button>
+    </div>
+</div>
+            <div class="sidebar-item">📊 GPA: 3.8</div>
+            <div class="sidebar-item" id="adminLink" onclick="location.href='admin.html'" style="cursor:pointer; display:none;">⚙️ Admin Panel</div>
+        </div>
+
+        <div>
+            <div id="feed" class="main-content active">
+                <div class="semester-banner"><h2>Fall 2025 Semester</h2><p>Registration for Spring 2026 starts Dec 15</p></div>
+                <div class="create-post">
+                    <div style="display:flex; align-items:center;">
+                        <div class="user-avatar">JM</div>
+                        <input type="text" class="post-input" placeholder="What's on your mind, John?" onclick="openPostModal()" readonly>
+                    </div>
+                </div>
+                <div id="postsContainer">
+                    <div class="post-card">
+                        <div class="post-header"><div class="user-avatar">SK</div><div class="post-info"><h4>Dr. Sarah Kimani</h4><div class="post-meta">2 hours ago</div></div></div>
+                        <div class="post-content">Reminder: CS302 Assignment 3 is due this Friday at 11:59 PM. No extensions will be granted.</div>
+                    </div>
+                    <div class="post-card">
+                        <div class="post-header"><div class="user-avatar">SC</div><div class="post-info"><h4>Student Council</h4><div class="post-meta">5 hours ago</div></div></div>
+                        <div class="post-content">Tech Symposium 2025 registration is now open! Join us for a week of innovation.</div>
+                    </div>
+                    <div class="post-card">
+                        <div class="post-header"><div class="user-avatar">KH</div><div class="post-info"><h4>KHU Admin</h4><div class="post-meta">Yesterday</div></div></div>
+                        <div class="post-content">Please ensure all tuition fees are cleared before the start of the examination period.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="courses" class="main-content">
+                <h1 style="margin-bottom:20px;">Registered Courses</h1>
+                <div id="coursesContainer"></div>
+            </div>
+
+         <div id="timetable" class="main-content">
+                <div class="timetable-card">
+                    <div class="timetable-title">Weekly Schedule - Fall 2025</div>
+                    <table class="timetable-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Monday</th>
+                                <th>Tuesday</th>
+                                <th>Wednesday</th>
+                                <th>Thursday</th>
+                                <th>Friday</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="time-col">7:00 AM - 1:00 PM</td>
+                                <td></td>
+                                <td><div class="class-item"><div class="class-code">CS302</div><div class="class-venue">Room LH-4</div></div></td>
+                                <td></td>
+                                <td><div class="class-item"><div class="class-code">CS302</div><div class="class-venue">Room LH-4</div></div></td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">1:00 PM - 4:00 PM</td>
+                                <td><div class="class-item"><div class="class-code">CS301</div><div class="class-venue">Room CS-101</div></div></td>
+                                <td></td>
+                                <td><div class="class-item"><div class="class-code">CS301</div><div class="class-venue">Room CS-101</div></div></td>
+                                <td></td>
+                                <td><div class="class-item"><div class="class-code">CS303</div><div class="class-venue">Lab B-12</div></div></td>
+                            </tr>
+                            <tr>
+                                <td class="time-col">4:00 PM - 7:00 PM</td>
+                                <td><div class="class-item"><div class="class-code">CS308</div><div class="class-venue">Room CS-103</div></div></td>
+                                <td></td>
+                                <td><div class="class-item"><div class="class-code">CS308</div><div class="class-venue">Room CS-103</div></div></td>
+                                <td></td>
+                                <td><div class="class-item"><div class="class-code">CS304</div><div class="class-venue">Lab C-12</div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+
+          <div id="map" class="main-content">
+                <div class="map-container">
+                    <div class="map-title">Campus Map</div>
+                    <div class="campus-map" id="campusMap"></div>
+                </div>
+            </div>
+
+            <div id="ai" class="main-content">
+                <div class="ai-container">
+                    <div class="ai-header">
+                        <div class="ai-avatar">AI</div>
+                        <h3>Highlands AI</h3>
+                    </div>
+                    <div class="chat-messages" id="chatMessages"></div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything...">
+                        <button class="chat-send" id="sendBtn">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <div id="ai" class="main-content">
+                <div class="ai-container">
+                    <div class="post-header" style="border-bottom:1px solid #eee;">
+                        <div class="user-avatar" style="background:#1877f2">AI</div>
+                        <div><h4>Highlands AI Assistant</h4><small style="color:#42b983">● Online</small></div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai">
+                            <div class="user-avatar">AI</div>
+                            <div class="message-bubble">
+                                Hello John! I am your personal campus assistant. I can help with:<br>
+                                • Course schedules & GPA<br>
+                                • Campus navigation<br>
+                                • Registration deadlines
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Ask me anything about KENYA HIGHLANDS...">
+                        <button onclick="sendMessage()" style="background:#1877f2; color:white; border:none; padding:10px 20px; border-radius:20px; cursor:pointer;">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="post-card" style="padding:15px;">
+                <h4>Upcoming Events</h4>
+                <div style="margin-top:10px; font-size:14px;">📅 Tech Symposium: Dec 12</div>
+                <div style="margin-top:5px; font-size:14px;">🔔 Registration: Dec 15</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <h3>Create Post</h3>
+            <textarea id="postText" style="width:100%; height:100px; margin-top:10px; padding:10px; border:1px solid #ddd;"></textarea>
+            <button class="btn-primary" onclick="submitPost()">Post</button>
+            <button class="btn-primary" style="background:#eee; color:#333;" onclick="closePostModal()">Cancel</button>
+        </div>
+    </div>
+    <button id="floatingLogoutBtn" onclick="logout()" title="Logout">
+    <span style="font-size: 20px;">➔</span>
+    <span class="logout-text">Logout</span>
+</button>
+</body>
+    <script>
+        function logout() {
+    // 1. Clear the specific user session key
+    localStorage.removeItem('khu_user');
+    
+    // 2. Refresh the page to trigger the checkLoginStatus() and show loginPage
+    window.location.reload();
+}
+                    // LOGIN HANDLER
+    function handleLogin() {
+        const enteredReg = document.getElementById('regNo').value.trim();
+        const enteredPhone = document.getElementById('phoneNo').value.trim();
+        const errorMsg = document.getElementById('loginError');
+
+        // First check if admin credentials
+        const admin = adminDB.find(a => a.username === enteredReg && a.password === enteredPhone);
+        if (admin) {
+            const sessionData = {
+                username: admin.username,
+                name: admin.name,
+                role: admin.role,
+                userType: 'admin',
+                loginTime: Date.now()
+            };
+            localStorage.setItem('khu_user', JSON.stringify(sessionData));
+            errorMsg.style.display = 'none';
+            // Redirect to admin page
+            window.location.href = 'admin.html';
+            return;
+        }
+
+        // Then check if student credentials
+        const student = studentDB.find(s => s.regNo === enteredReg && s.phone === enteredPhone);
+
+        if (student) {
+            // Save the full student object and the login time
+            const sessionData = {
+                ...student,
+                userType: 'student',
+                loginTime: Date.now()
+            };
+            localStorage.setItem('khu_user', JSON.stringify(sessionData));
+            
+            // Hide login and update UI
+            document.getElementById('loginPage').style.display = 'none';
+            updateProfileUI(student);
+            errorMsg.style.display = 'none';
+        } else {
+            errorMsg.style.display = 'block';
+            errorMsg.textContent = "Invalid credentials.";
+        }
+    }
+function updateProfileUI(student) {
+    const nameDisplay = document.getElementById('displayUserName');
+    const courseDisplay = document.getElementById('displayUserCourse');
+    
+    if (nameDisplay && courseDisplay) {
+        nameDisplay.textContent = student.name;
+        courseDisplay.textContent = student.course;
+    }
+}
+
+// Helper function to update the Sidebar Profile
+function updateProfileUI(student) {
+    const sidebarProfile = document.querySelector('.sidebar-item div');
+    if (sidebarProfile) {
+        sidebarProfile.innerHTML = `
+            <div style="font-weight: 600; font-size: 15px;">${student.name}</div>
+            <div style="font-size: 13px; color: #65676b;">${student.course}</div>
+        `;
+    }
+}// ==== ADMIN DATABASE ====
+        const adminDB = [
+            { username: "admin", password: "admin123", name: "System Administrator", role: "admin" }
+        ];
+
+        // ==== STUDENT DATABASE (Demo accounts - remove or replace with Firebase) ====
+        const studentDB = [
+            { regNo: "BCSF/001/2022", phone: "0712345678", name: "John Mwangi", course: "Computer Science" },
+            { regNo: "BCSF/002/2022", phone: "0722000000", name: "Jane Doe", course: "Information Technology" },
+            { regNo: "BCSF/003/2022", phone: "0733111222", name: "Sam Kibet", course: "Software Engineering" }
+        ];
+
+            // DROPDOWN HANDLER FOR COURSE UNITS
+            function toggleUnits(index) {
+                const unitDiv = document.getElementById(`units-${index}`);
+                if (unitDiv) {
+                    unitDiv.style.display = unitDiv.style.display === 'none' ? 'block' : 'none';
+                }
+            }
+        const courses = [
+            { code: "CS301", title: "Advanced Algorithms", instructor: "Prof. James Otieno", units: ["Complexity Analysis", "Dynamic Programming", "Graph Algorithms", "NP-Completeness"] },
+            { code: "CS302", title: "Web Development", instructor: "Dr. Sarah Kimani", units: ["HTML/CSS/JS", "React Framework", "Node.js & Express", "Database Integration"] },
+            { code: "CS303", title: "Database Systems", instructor: "Dr. Michael Ochieng", units: ["SQL & NoSQL", "Normalization", "Indexing", "Transactions"] },
+            { code: "CS304", title: "Software Engineering", instructor: "Prof. Grace Wanjiku", units: ["Agile Methodology", "Design Patterns", "Testing Strategies", "DevOps"] }
+        ];
+
+        const buildings = [
+            { name: "Main Library", left: 20, top: 20, width: 120, height: 80 },
+            { name: "CS Building", left: 45, top: 35, width: 100, height: 70 },
+            { name: "Admin Block", left: 10, top: 60, width: 110, height: 60 },
+            { name: "Sports Complex", left: 70, top: 15, width: 130, height: 90 }
+        ];
+
+        function showSection(id, event) {
+            document.querySelectorAll('.main-content').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function renderCourses() {
+            const container = document.getElementById('coursesContainer');
+            container.innerHTML = '';
+            courses.forEach(c => {
+                const el = document.createElement('div');
+                el.className = 'course-card';
+               // Locate inside renderCourses() loop:
+                el.innerHTML = `
+                    <div class="course-header">
+                        <span class="course-badge">${c.code}</span>
+                        <span class="course-reg">Registered</span>
+                    </div>
+                    <div class="course-title">${c.title}</div>
+                    <div class="course-info">Instructor: ${c.instructor}</div>
+                    <button onclick="toggleUnits(${courses.indexOf(c)})" style="width:100%; margin-top:10px; padding:8px; cursor:pointer; background:#f0f2f5; border:none; border-radius:4px;">
+                        Show/Hide Units ▼
+                    </button>
+                    <div id="units-${courses.indexOf(c)}" style="display:none; margin-top:10px;">
+                        ${c.units.map(u => `<div class="unit-item">${u}</div>`).join('')}
+                    </div>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+
+        function toggleUnits(index) {
+            document.getElementById(`units-${index}`).classList.toggle('active');
+        }
+
+            //  renderMap 
+    function renderMap() {
+        const map = document.getElementById('campusMap');
+        if (!map) return;
+        map.innerHTML = '';
+
+        buildings.forEach(b => {
+            const el = document.createElement('div');
+            el.className = 'map-building';
+            
+            // Fix: Use numerical values with percentage/pixel units
+            el.style.left = b.left + '%';
+            el.style.top = (b.top || 20) + '%'; // Default top if missing
+            el.style.width = b.width + 'px';
+            el.style.height = b.height + 'px';
+            
+            el.textContent = b.name;
+            
+            el.onclick = () => {
+                alert(`${b.name}\nType: ${getBuildingType(b.type)}`);
+            };
+            
+            map.appendChild(el);
+        });
+    }
+
+
+// Add this helper function to improve visual variety
+// ==== STEP 2: INTERACTIVE AI LOGIC ====
+
+// 1. Helper to add messages to the UI
+function addMessage(text, sender) {
+    const chatMessages = document.getElementById('chatMessages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${sender}`;
+    msgDiv.innerHTML = `
+        <div class="message-avatar">${sender === 'user' ? 'JM' : 'AI'}</div>
+        <div class="message-bubble">${text}</div>
+    `;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// 2. Typing indicators
+function showTyping() {
+    const chatMessages = document.getElementById('chatMessages');
+    const typing = document.createElement('div');
+    typing.className = 'message ai';
+    typing.id = 'typingIndicator';
+    typing.innerHTML = `
+        <div class="message-avatar">AI</div>
+        <div class="message-bubble">...</div>
+    `;
+    chatMessages.appendChild(typing);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+    const typing = document.getElementById('typingIndicator');
+    if (typing) typing.remove();
+}
+
+// 3. The Interactive Logic
+function sendMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const userText = chatInput.value.trim();
+    const lowerText = userText.toLowerCase();
+
+    if (!userText) return;
+
+    // Display your message
+    addMessage(userText, 'user');
+    chatInput.value = '';
+    sendBtn.disabled = true;
+
+    // Show AI "Thinking"
+    showTyping();
+
+    setTimeout(() => {
+        removeTyping();
+        let response = "I'm not sure about that. Try asking about your GPA, courses, or where a building is!";
+
+        // Logic to answer questions from your data
+        if (lowerText.includes('hi') || lowerText.includes('hello')) {
+            response = "Hello John! How can I help you with your Highlands studies today?";
+        } 
+        else if (lowerText.includes('gpa')) {
+            response = "Your current GPA is 3.8. You're doing great!";
+        } 
+        else if (lowerText.includes('course') || lowerText.includes('class')) {
+            const list = courses.map(c => c.code).join(', ');
+            response = `You are registered for: ${list}. Which one should we look at?`;
+        } 
+        else if (lowerText.includes('where is')) {
+            const bld = buildings.find(b => lowerText.includes(b.name.toLowerCase()));
+            if (bld) {
+                response = `The ${bld.name} is located at ${bld.left}% Left and ${bld.top}% Top on your map.`;
+            } else {
+                response = "I couldn't find that building. Try asking 'Where is the Main Library?'";
+            }
+        }
+
+        addMessage(response, 'ai');
+        sendBtn.disabled = false;
+    }, 800);
+}
+        function appendMsg(text, sender) {
+            const chat = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            div.innerHTML = `<div class="user-avatar">${sender === 'user' ? 'JM' : 'AI'}</div><div class="message-bubble">${text}</div>`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function openPostModal() { document.getElementById('postModal').classList.add('active'); }
+        function closePostModal() { document.getElementById('postModal').classList.remove('active'); }
+        function submitPost() {
+            const text = document.getElementById('postText').value;
+            if(!text) return;
+            const post = document.createElement('div');
+            post.className = 'post-card';
+            post.innerHTML = `<div class="post-header"><div class="user-avatar">JM</div><div class="post-info"><h4>John Mwangi</h4><div class="post-meta">Just now</div></div></div><div class="post-content">${text}</div>`;
+            document.getElementById('postsContainer').prepend(post);
+            closePostModal();
+            document.getElementById('postText').value = '';
+        }
+
+        // 1. Define these functions globally (outside of any listeners)
+function checkLoginStatus() {
+    const savedUser = localStorage.getItem('khu_user');
+    if (savedUser) {
+        const user = JSON.parse(savedUser);
+        const thirtyMinutes = 30 * 60 * 1000;
+        const now = Date.now();
+
+        if (now - user.loginTime < thirtyMinutes) {
+            document.getElementById('loginPage').style.display = 'none';
+            // This line ensures the sidebar shows the correct name after refresh
+            updateProfileUI(user);
+            
+            // Show admin link only for admin users
+            if (user.userType === 'admin') {
+                document.getElementById('adminLink').style.display = 'flex';
+            }
+        } else {
+            logout();
+        }
+    }
+}
+
+function logout() {
+    localStorage.removeItem('khu_user');
+    window.location.reload(); // Returns to login page
+}
+
+/// ==== STEP 5: PERSONALIZED AI INITIALIZATION ====
+
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Run security check (Session Management)
+    checkLoginStatus(); 
+
+    // 2. Render standard components
+    renderCourses();
+    renderMap();
+
+    // 3. Get the logged-in user's name
+    let userName = "Student"; // Default fallback
+    const savedUser = localStorage.getItem('khu_user');
+    
+    if (savedUser) {
+        const user = JSON.parse(savedUser);
+        userName = user.name; // Get the actual name (e.g., "Jane Doe")
+    }
+
+    // 4. Add the Personalized AI Greeting
+    const chatMessages = document.getElementById('chatMessages');
+    if (chatMessages && chatMessages.children.length === 0) {
+        addMessage(`Hello ${userName}! I'm Highlands AI, your personal campus assistant. I can help you with:
+            <br><br>• Course schedules & assignments
+            <br>• Campus navigation & building locations
+            <br>• Registration deadlines
+            <br>• GPA calculations
+            <br><br>How can I assist you today?`, 'ai');
+    }
+
+    // 5. Re-enable listeners
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    }
+    
+    if (sendBtn) {
+        sendBtn.onclick = sendMessage;
+    }
+});
+    </script>
+
+</html>
