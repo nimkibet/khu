@@ -5,6 +5,7 @@
   "devCommand": "vercel dev",
   "installCommand": "npm install",
   "regions": ["iad1"],
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/api/(.*)",
