@@ -9,7 +9,6 @@ let firebaseApp;
 let db;
 
 try {
-    // Try to initialize Firebase if config is available
     if (typeof firebase !== 'undefined' && 
         import.meta.env?.VITE_FIREBASE_API_KEY && 
         import.meta.env?.VITE_FIREBASE_API_KEY !== "YOUR_API_KEY") {
@@ -35,20 +34,103 @@ try {
 // State
 let students = [];
 let filteredStudents = [];
+let courses = [];
+let admins = [];
+
+// Default courses (used if no courses stored)
+const defaultCourses = [
+    { code: 'BCSF', name: 'Bachelor of Computer Science' },
+    { code: 'BCIT', name: 'Bachelor of Information Technology' },
+    { code: 'BBIT', name: 'Bachelor of Business Information Technology' },
+    { code: 'BCS', name: 'Bachelor of Computer Science' },
+    { code: 'BSSE', name: 'Bachelor of Software Engineering' },
+    { code: 'BMATH', name: 'Bachelor of Mathematics' },
+    { code: 'BSTAT', name: 'Bachelor of Statistics' },
+    { code: 'MSC', name: 'Master of Computer Science' },
+    { code: 'MBA', name: 'Master of Business Administration' }
+];
 
 // DOM Elements
 const addStudentForm = document.getElementById('addStudentForm');
 const editStudentForm = document.getElementById('editStudentForm');
+const addCourseForm = document.getElementById('addCourseForm');
+const addAdminForm = document.getElementById('addAdminForm');
 const studentList = document.getElementById('studentList');
+const courseList = document.getElementById('courseList');
+const adminList = document.getElementById('adminList');
 const searchInput = document.getElementById('searchInput');
 const toastContainer = document.getElementById('toastContainer');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    fetchStudents();
+    loadCourses();
+    setupTabNavigation();
     setupEventListeners();
+    fetchStudents();
+    fetchAdmins();
     setAgeRestriction();
 });
+
+// Load courses from localStorage or use defaults
+function loadCourses() {
+    const storedCourses = localStorage.getItem('khu_courses');
+    if (storedCourses) {
+        courses = JSON.parse(storedCourses);
+    } else {
+        courses = [...defaultCourses];
+        saveCourses();
+    }
+    updateCourseDropdowns();
+    renderCourses();
+}
+
+// Save courses to localStorage
+function saveCourses() {
+    localStorage.setItem('khu_courses', JSON.stringify(courses));
+}
+
+// Update course dropdowns
+function updateCourseDropdowns() {
+    const addCourseSelect = document.getElementById('course');
+    const editCourseSelect = document.getElementById('editCourse');
+    
+    const courseOptions = courses.map(c => 
+        `<option value="${c.code}">${c.code} - ${c.name}</option>`
+    ).join('');
+    
+    const defaultOption = '<option value="">Select Course</option>';
+    
+    if (addCourseSelect) {
+        addCourseSelect.innerHTML = defaultOption + courseOptions;
+    }
+    if (editCourseSelect) {
+        editCourseSelect.innerHTML = defaultOption + courseOptions;
+    }
+}
+
+// Tab Navigation
+function setupTabNavigation() {
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            
+            // Update buttons
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Update content
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+}
 
 // Set minimum age of 12 years for date of birth
 function setAgeRestriction() {
@@ -68,10 +150,16 @@ function setupEventListeners() {
     // Edit Student Form
     editStudentForm.addEventListener('submit', handleEditStudent);
     
+    // Add Course Form
+    addCourseForm.addEventListener('submit', handleAddCourse);
+    
+    // Add Admin Form
+    addAdminForm.addEventListener('submit', handleAddAdmin);
+    
     // Search
     searchInput.addEventListener('input', handleSearch);
     
-    // Phone formatting for Kenyan numbers
+    // Phone formatting
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
         phoneInput.addEventListener('blur', formatKenyanPhone);
@@ -97,31 +185,27 @@ function formatKenyanPhone(e) {
     
     if (!phone) return;
     
-    // Remove any spaces or dashes
     phone = phone.replace(/[\s-]/g, '');
     
-    // Convert 07XX format to +254XX format
     if (/^07\d{8}$/.test(phone)) {
         phone = '+254' + phone.substring(1);
     }
     
-    // Validate format
     if (/^\+254\d{9}$/.test(phone)) {
         input.value = phone;
     } else if (!/^\+254/.test(phone) && /^07\d{8}$/.test(phone)) {
-        // Already handled above, but keep for safety
         input.value = '+254' + phone.substring(1);
     }
 }
 
 // Validate Kenyan phone number
 function validateKenyanPhone(phone) {
-    if (!phone) return true; // Empty is allowed
+    if (!phone) return true;
     const cleaned = phone.replace(/[\s-]/g, '');
     return /^(\+254\d{9}|07\d{8})$/.test(cleaned);
 }
 
-// Validate ID number (alphanumeric, 7-12 characters)
+// Validate ID number
 function validateIdNumber(idNumber) {
     if (!idNumber) return false;
     return /^[A-Za-z0-9]{7,12}$/.test(idNumber);
@@ -164,17 +248,14 @@ async function handleAddStudent(e) {
     submitBtn.disabled = true;
     
     try {
-        // Get form values
         const idNumber = document.getElementById('idNumber').value.trim();
         const phone = document.getElementById('phone').value.trim();
         const emergencyPhone = document.getElementById('emergencyContactPhone').value.trim();
         
-        // Validate ID Number
         if (!validateIdNumber(idNumber)) {
             throw new Error('ID/Birth Certificate Number must be 7-12 alphanumeric characters');
         }
         
-        // Validate phone numbers
         if (!validateKenyanPhone(phone)) {
             throw new Error('Please enter a valid Kenyan phone number (+254XXXXXXXXX or 07XXXXXXXX)');
         }
@@ -198,7 +279,7 @@ async function handleAddStudent(e) {
             emergencyContactName: document.getElementById('emergencyContactName').value.trim(),
             emergencyContactPhone: emergencyPhone,
             username: document.getElementById('regNumber').value.trim().toUpperCase(),
-            password: idNumber, // Default password is ID number
+            password: idNumber,
             status: 'Active',
             createdBy: 'admin'
         };
@@ -214,7 +295,7 @@ async function handleAddStudent(e) {
         const result = await response.json();
         
         if (result.success) {
-            showToast('Student added successfully! Login credentials: Username=' + studentData.username + ', Password=' + studentData.password, 'success');
+            showToast('Student added successfully! Login: ' + studentData.username + ' / ' + studentData.password, 'success');
             addStudentForm.reset();
             students.unshift(result.data);
             filteredStudents = [...students];
@@ -265,7 +346,6 @@ async function handleEditStudent(e) {
             showToast('Student updated successfully!', 'success');
             closeEditModal();
             
-            // Update local data
             const index = students.findIndex(s => s.id === studentId);
             if (index !== -1) {
                 students[index] = { ...students[index], ...studentData };
@@ -312,6 +392,201 @@ async function deleteStudent(studentId) {
     }
 }
 
+// Course Management Functions
+async function handleAddCourse(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Adding...';
+    submitBtn.disabled = true;
+    
+    try {
+        const code = document.getElementById('courseCode').value.trim().toUpperCase();
+        const name = document.getElementById('courseName').value.trim();
+        
+        // Check if course already exists
+        if (courses.some(c => c.code === code)) {
+            throw new Error('Course with this code already exists');
+        }
+        
+        const newCourse = { code, name };
+        courses.push(newCourse);
+        saveCourses();
+        updateCourseDropdowns();
+        renderCourses();
+        updateStats();
+        
+        showToast('Course added successfully!', 'success');
+        addCourseForm.reset();
+    } catch (error) {
+        console.error('Error adding course:', error);
+        showToast(error.message || 'Failed to add course', 'error');
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+function deleteCourse(courseCode) {
+    if (!confirm(`Are you sure you want to delete course ${courseCode}?`)) {
+        return;
+    }
+    
+    courses = courses.filter(c => c.code !== courseCode);
+    saveCourses();
+    updateCourseDropdowns();
+    renderCourses();
+    updateStats();
+    
+    showToast('Course deleted successfully!', 'success');
+}
+
+function renderCourses() {
+    if (courses.length === 0) {
+        courseList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <p>No courses added yet</p>
+            </div>
+        `;
+        return;
+    }
+    
+    courseList.innerHTML = courses.map(course => `
+        <div class="course-item">
+            <div>
+                <div class="course-name">${escapeHtml(course.name)}</div>
+                <div class="course-code">${escapeHtml(course.code)}</div>
+            </div>
+            <button class="btn btn-danger btn-sm" onclick="deleteCourse('${course.code}')">Delete</button>
+        </div>
+    `).join('');
+}
+
+// Admin Management Functions
+async function fetchAdmins() {
+    // For now, load from localStorage (in a real app, this would be an API call)
+    const storedAdmins = localStorage.getItem('khu_admins');
+    if (storedAdmins) {
+        admins = JSON.parse(storedAdmins);
+    } else {
+        // Create default admin if none exists
+        admins = [{
+            id: 'admin001',
+            firstName: 'System',
+            lastName: 'Admin',
+            email: 'admin@khu.ac.ke',
+            username: 'admin',
+            role: 'superadmin',
+            createdAt: new Date().toISOString()
+        }];
+        saveAdmins();
+    }
+    renderAdmins();
+}
+
+function saveAdmins() {
+    localStorage.setItem('khu_admins', JSON.stringify(admins));
+}
+
+async function handleAddAdmin(e) {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Adding...';
+    submitBtn.disabled = true;
+    
+    try {
+        const firstName = document.getElementById('adminFirstName').value.trim();
+        const lastName = document.getElementById('adminLastName').value.trim();
+        const email = document.getElementById('adminEmail').value.trim().toLowerCase();
+        const username = document.getElementById('adminUsername').value.trim().toLowerCase();
+        const password = document.getElementById('adminPassword').value;
+        const role = document.getElementById('adminRole').value;
+        
+        // Check if username already exists
+        if (admins.some(a => a.username === username)) {
+            throw new Error('Username already exists');
+        }
+        
+        // Check if email already exists
+        if (admins.some(a => a.email === email)) {
+            throw new Error('Email already exists');
+        }
+        
+        const newAdmin = {
+            id: 'admin' + Date.now(),
+            firstName,
+            lastName,
+            email,
+            username,
+            password, // In production, hash this!
+            role,
+            createdAt: new Date().toISOString()
+        };
+        
+        admins.push(newAdmin);
+        saveAdmins();
+        renderAdmins();
+        
+        showToast('Admin added successfully!', 'success');
+        addAdminForm.reset();
+    } catch (error) {
+        console.error('Error adding admin:', error);
+        showToast(error.message || 'Failed to add admin', 'error');
+    } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+function deleteAdmin(adminId) {
+    const admin = admins.find(a => a.id === adminId);
+    if (!admin) return;
+    
+    if (admin.role === 'superadmin') {
+        showToast('Cannot delete super admin', 'error');
+        return;
+    }
+    
+    if (!confirm('Are you sure you want to delete this admin?')) {
+        return;
+    }
+    
+    admins = admins.filter(a => a.id !== adminId);
+    saveAdmins();
+    renderAdmins();
+    
+    showToast('Admin deleted successfully!', 'success');
+}
+
+function renderAdmins() {
+    if (admins.length === 0) {
+        adminList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <p>No admins found</p>
+            </div>
+        `;
+        return;
+    }
+    
+    adminList.innerHTML = admins.map(admin => `
+        <div class="admin-item">
+            <div class="admin-info">
+                <h4>${escapeHtml(admin.firstName)} ${escapeHtml(admin.lastName)}</h4>
+                <p>${escapeHtml(admin.email)} • ${escapeHtml(admin.role)}</p>
+                <p>Username: ${escapeHtml(admin.username)}</p>
+            </div>
+            ${admin.role !== 'superadmin' ? `
+                <button class="btn btn-danger btn-sm" onclick="deleteAdmin('${admin.id}')">Delete</button>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
 // UI Functions
 function renderStudents() {
     if (filteredStudents.length === 0) {
@@ -330,8 +605,8 @@ function renderStudents() {
                 </span>
             </div>
             <div class="student-actions">
-                <button class="btn btn-secondary btn-icon" onclick="openEditModal('${student.id}')">Edit</button>
-                <button class="btn btn-danger btn-icon" onclick="deleteStudent('${student.id}')">Delete</button>
+                <button class="btn btn-secondary btn-icon btn-sm" onclick="openEditModal('${student.id}')">Edit</button>
+                <button class="btn btn-danger btn-icon btn-sm" onclick="deleteStudent('${student.id}')">Delete</button>
             </div>
         </div>
     `).join('');
@@ -357,11 +632,11 @@ function showLoading() {
 function updateStats() {
     const total = students.length;
     const active = students.filter(s => s.status?.toLowerCase() === 'active').length;
-    const courses = [...new Set(students.map(s => s.course))].filter(Boolean).length;
+    const courseCount = courses.length;
     
     document.getElementById('totalStudents').textContent = total;
     document.getElementById('activeStudents').textContent = active;
-    document.getElementById('totalCourses').textContent = courses;
+    document.getElementById('totalCourses').textContent = courseCount;
 }
 
 function handleSearch(e) {
@@ -431,3 +706,5 @@ function escapeHtml(text) {
 window.openEditModal = openEditModal;
 window.closeEditModal = closeEditModal;
 window.deleteStudent = deleteStudent;
+window.deleteCourse = deleteCourse;
+window.deleteAdmin = deleteAdmin;
