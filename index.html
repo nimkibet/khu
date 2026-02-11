@@ -363,7 +363,7 @@
             <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Password (ID/Birth Certificate Number)</label>
             <input type="password" id="USER_ID" placeholder="Enter ID or Birth Certificate No." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
         </div>
-        <button id="loginBtn" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+        <button id="loginBtn" onclick="handleLogin()" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
             Login to Portal
         </button>
         <p id="loginError" style="color: #e41e3f; font-size: 13px; margin-top: 15px; text-align: center; display: none;">Invalid credentials.</p>
