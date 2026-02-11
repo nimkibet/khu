@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Setup login form event listeners
 function setupLoginListeners() {
-    const regNoInput = document.getElementById('regNo');
-    const idNumberInput = document.getElementById('idNumber');
+    const regNoInput = document.getElementById('loginRegNo');
+    const idNumberInput = document.getElementById('loginIdNumber');
     
     if (regNoInput) {
         regNoInput.addEventListener('keypress', (e) => {
@@ -82,100 +82,57 @@ function showLoginPage() {
 
 // Handle login
 async function handleLogin() {
-    const regNo = document.getElementById('regNo')?.value.trim().toUpperCase();
-    const idNumber = document.getElementById('idNumber')?.value.trim();
+    // Get input elements with null checks
+    const regNoInput = document.getElementById('loginRegNo');
+    const idNumberInput = document.getElementById('loginIdNumber');
     const errorMsg = document.getElementById('loginError');
+    
+    // Null check for input elements
+    if (!regNoInput || !idNumberInput) {
+        console.error('Login form elements not found');
+        return;
+    }
+    
+    const regNo = regNoInput.value.trim().toUpperCase();
+    const idNumber = idNumberInput.value.trim();
     
     if (!regNo || !idNumber) {
         showLoginError('Please enter both registration number and ID/Birth Certificate number.');
         return;
     }
     
-    // Check for admin login (special case)
-    if (regNo === 'ADMIN' && idNumber === 'admin123') {
-        currentUser = {
-            id: 'admin',
-            firstName: 'Admin',
-            lastName: 'Administrator',
-            regNumber: 'ADMIN',
-            course: 'Administrator',
-            isAdmin: true
-        };
-        localStorage.setItem('khu_currentUser', JSON.stringify(currentUser));
-        errorMsg.style.display = 'none';
-        document.getElementById('regNo').value = '';
-        document.getElementById('idNumber').value = '';
-        // Redirect to admin page
-        window.location.href = 'admin.html';
-        return;
-    }
-    
-    // Try admin login via API (for newly registered admins)
-    if (regNo.toLowerCase().startsWith('admin')) {
-        try {
-            const adminResponse = await fetch(`${API_BASE_URL}/admins?username=${encodeURIComponent(regNo)}&password=${encodeURIComponent(idNumber)}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-            });
-            
-            const adminResult = await adminResponse.json();
-            
-            if (adminResult.success && adminResult.data && adminResult.data.length > 0) {
-                const admin = adminResult.data[0];
-                currentUser = {
-                    id: admin.id,
-                    firstName: admin.firstName,
-                    lastName: admin.lastName,
-                    regNumber: admin.username.toUpperCase(),
-                    email: admin.email,
-                    course: 'Administrator',
-                    isAdmin: true
-                };
-                localStorage.setItem('khu_currentUser', JSON.stringify(currentUser));
-                errorMsg.style.display = 'none';
-                document.getElementById('regNo').value = '';
-                document.getElementById('idNumber').value = '';
-                // Redirect to admin page
-                window.location.href = 'admin.html';
-                return;
-            }
-        } catch (adminError) {
-            console.error('Admin login error:', adminError);
-        }
-    }
-    
     try {
-        // Fetch all students to find matching credentials
-        const response = await fetch(`${API_BASE_URL}/students`, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' }
+        // Send POST request to login API
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ regNo, idNumber })
         });
         
         const result = await response.json();
         
-        if (result.success) {
-            // Find student with matching regNumber and idNumber
-            const student = result.data.find(s => 
-                s.regNumber?.toUpperCase() === regNo && 
-                s.idNumber === idNumber
-            );
+        if (result.success && result.user) {
+            // Login successful
+            currentUser = result.user;
+            localStorage.setItem('khu_currentUser', JSON.stringify(currentUser));
             
-            if (student) {
-                // Login successful
-                currentUser = student;
-                localStorage.setItem('khu_currentUser', JSON.stringify(student));
+            // Clear form
+            regNoInput.value = '';
+            idNumberInput.value = '';
+            errorMsg.style.display = 'none';
+            
+            if (currentUser.isAdmin) {
+                // Redirect to admin page
+                window.location.href = 'admin.html';
+            } else {
+                // Show main content
                 showMainContent();
                 updateUserDisplay();
-                errorMsg.style.display = 'none';
-                
-                // Clear form
-                document.getElementById('regNo').value = '';
-                document.getElementById('idNumber').value = '';
-            } else {
-                showLoginError('Invalid registration number or ID/Birth Certificate number.');
             }
         } else {
-            showLoginError('Unable to verify credentials. Please try again.');
+            showLoginError(result.error || 'Invalid credentials.');
         }
     } catch (error) {
         console.error('Login error:', error);
