@@ -4,6 +4,7 @@
     <title>KENYA HIGHLANDS UNIVERSITY </title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:,">
     <title>KENYA HIGHLANDS UNIVERSITY-Be your brother's keeper</title>
     <style>
         /* ==== GLOBAL STYLES ==== */
@@ -563,47 +564,59 @@
     window.location.reload();
 }
                     // LOGIN HANDLER
-    function handleLogin() {
-        const enteredReg = document.getElementById('regNo').value.trim();
-        const enteredPhone = document.getElementById('phoneNo').value.trim();
+    async function handleLogin() {
         const errorMsg = document.getElementById('loginError');
-
-        // First check if admin credentials
-        const admin = adminDB.find(a => a.username === enteredReg && a.password === enteredPhone);
-        if (admin) {
-            const sessionData = {
-                username: admin.username,
-                name: admin.name,
-                role: admin.role,
-                userType: 'admin',
-                loginTime: Date.now()
-            };
-            localStorage.setItem('khu_user', JSON.stringify(sessionData));
-            errorMsg.style.display = 'none';
-            // Redirect to admin page
-            window.location.href = 'admin.html';
+        
+        const regNoEl = document.getElementById('loginRegNo');
+        const idNumberEl = document.getElementById('loginIdNumber');
+        
+        if (!regNoEl) {
+            console.error('Element with id "loginRegNo" not found');
             return;
         }
+        
+        if (!idNumberEl) {
+            console.error('Element with id "loginIdNumber" not found');
+            return;
+        }
+        
+        const regNo = regNoEl.value.trim();
+        const idNumber = idNumberEl.value.trim();
 
-        // Then check if student credentials
-        const student = studentDB.find(s => s.regNo === enteredReg && s.phone === enteredPhone);
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ regNo, idNumber })
+            });
 
-        if (student) {
-            // Save the full student object and the login time
-            const sessionData = {
-                ...student,
-                userType: 'student',
-                loginTime: Date.now()
-            };
-            localStorage.setItem('khu_user', JSON.stringify(sessionData));
-            
-            // Hide login and update UI
-            document.getElementById('loginPage').style.display = 'none';
-            updateProfileUI(student);
-            errorMsg.style.display = 'none';
-        } else {
+            const data = await response.json();
+
+            if (data.success) {
+                const sessionData = {
+                    ...data.user,
+                    userType: data.user.isAdmin ? 'admin' : 'student',
+                    loginTime: Date.now()
+                };
+                localStorage.setItem('khu_user', JSON.stringify(sessionData));
+                
+                if (data.user.isAdmin) {
+                    window.location.href = 'admin.html';
+                } else {
+                    document.getElementById('loginPage').style.display = 'none';
+                    updateProfileUI(data.user);
+                    errorMsg.style.display = 'none';
+                }
+            } else {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = data.error || "Invalid credentials.";
+            }
+        } catch (error) {
+            console.error('Login error:', error);
             errorMsg.style.display = 'block';
-            errorMsg.textContent = "Invalid credentials.";
+            errorMsg.textContent = "An error occurred. Please try again.";
         }
     }
 function updateProfileUI(student) {
