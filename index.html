@@ -363,7 +363,7 @@
             <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Password (ID/Birth Certificate Number)</label>
             <input type="password" id="USER_ID" placeholder="Enter ID or Birth Certificate No." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
         </div>
-        <button onclick="handleLogin()" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+        <button id="loginBtn" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
             Login to Portal
         </button>
         <p id="loginError" style="color: #e41e3f; font-size: 13px; margin-top: 15px; text-align: center; display: none;">Invalid credentials.</p>
@@ -555,7 +555,7 @@
     <span class="logout-text">Logout</span>
 </button>
 </body>
-    <script>
+    <script type="module">
         function logout() {
     // 1. Clear the specific user session key
     localStorage.removeItem('khu_user');
@@ -563,74 +563,89 @@
     // 2. Refresh the page to trigger the checkLoginStatus() and show loginPage
     window.location.reload();
 }
-                    // LOGIN HANDLER
-    async function handleLogin() {
-        // Brute force selection
-        const regElement = document.getElementById('USER_REG');
-        const idElement = document.getElementById('USER_ID');
-        
-        // If it's still null, we alert exactly what is missing
-        if (!regElement) { 
-            alert("CRITICAL ERROR: Input with id 'USER_REG' not found!"); 
-            console.error("CRITICAL ERROR: Element with id 'USER_REG' not found!");
-            return; 
-        }
-        if (!idElement) { 
-            alert("CRITICAL ERROR: Input with id 'USER_ID' not found!"); 
-            console.error("CRITICAL ERROR: Element with id 'USER_ID' not found!");
-            return; 
-        }
 
-        const regNo = regElement.value.trim();
-        const idNumber = idElement.value.trim();
-
-        console.log("Attempting login for:", regNo);
-
-        // Clear previous error
-        const errorMsg = document.getElementById('loginError');
-        if (errorMsg) errorMsg.style.display = 'none';
-
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ regNo, idNumber })
-            });
+        // LOGIN HANDLER
+        async function handleLogin() {
+            // Brute force selection
+            const regElement = document.getElementById('USER_REG');
+            const idElement = document.getElementById('USER_ID');
             
-            const data = await response.json();
-            
-            if (data.success) {
-                const sessionData = {
-                    ...data.user,
-                    userType: data.user.isAdmin ? 'admin' : 'student',
-                    loginTime: Date.now()
-                };
-                localStorage.setItem('khu_user', JSON.stringify(sessionData));
+            // If it's still null, we alert exactly what is missing
+            if (!regElement) { 
+                alert("CRITICAL ERROR: Input with id 'USER_REG' not found!"); 
+                console.error("CRITICAL ERROR: Element with id 'USER_REG' not found!");
+                return; 
+            }
+            if (!idElement) { 
+                alert("CRITICAL ERROR: Input with id 'USER_ID' not found!"); 
+                console.error("CRITICAL ERROR: Element with id 'USER_ID' not found!");
+                return; 
+            }
+
+            const regNo = regElement.value.trim();
+            const idNumber = idElement.value.trim();
+
+            console.log("Attempting login for:", regNo);
+
+            // Clear previous error
+            const errorMsg = document.getElementById('loginError');
+            if (errorMsg) errorMsg.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ regNo, idNumber })
+                });
                 
-                if (data.user.isAdmin) {
-                    window.location.href = 'admin.html';
+                const data = await response.json();
+                
+                if (data.success) {
+                    const user = data.user;
+                    const sessionData = {
+                        ...user,
+                        userType: user.isAdmin ? 'admin' : 'student',
+                        loginTime: Date.now()
+                    };
+                    localStorage.setItem('khu_user', JSON.stringify(sessionData));
+                    
+                    // Role-Based Redirects
+                    if (user.role === 'admin' || user.isAdmin === true) {
+                        // Admin redirects to admin.html
+                        window.location.href = 'admin.html';
+                    } else if (user.role === 'student' || !user.isAdmin) {
+                        // Student redirects to optimized feed at feed.html
+                        window.location.href = 'feed.html';
+                    } else {
+                        // Default/Fallback - no role matched
+                        console.error('Unknown user role:', user.role);
+                        if (errorMsg) {
+                            errorMsg.style.display = 'block';
+                            errorMsg.textContent = "Unknown user role. Please contact support.";
+                        }
+                    }
                 } else {
-                    document.getElementById('loginPage').style.display = 'none';
-                    updateProfileUI(data.user);
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                        errorMsg.textContent = data.error || "Invalid credentials.";
+                    } else {
+                        alert(data.error || "Login Failed");
+                    }
                 }
-            } else {
+            } catch (err) {
+                console.error("Fetch error:", err);
                 if (errorMsg) {
                     errorMsg.style.display = 'block';
-                    errorMsg.textContent = data.error || "Invalid credentials.";
+                    errorMsg.textContent = "Connection failed. Check your internet.";
                 } else {
-                    alert(data.error || "Login Failed");
+                    alert("Connection failed. Check your internet.");
                 }
             }
-        } catch (err) {
-            console.error("Fetch error:", err);
-            if (errorMsg) {
-                errorMsg.style.display = 'block';
-                errorMsg.textContent = "Connection failed. Check your internet.";
-            } else {
-                alert("Connection failed. Check your internet.");
-            }
         }
-    }
+
+        // Attach event listener using module scope
+        document.getElementById('loginBtn').addEventListener('click', handleLogin);
+    </script>
 function updateProfileUI(student) {
     const nameDisplay = document.getElementById('displayUserName');
     const courseDisplay = document.getElementById('displayUserCourse');
