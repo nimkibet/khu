@@ -1,375 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-    <title>KENYA HIGHLANDS UNIVERSITY </title>
+<head>
+    <title>KENYA HIGHLANDS UNIVERSITY</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="data:,">
-    <title>KENYA HIGHLANDS UNIVERSITY-Be your brother's keeper</title>
     <style>
-        /* ==== GLOBAL STYLES ==== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: white;
-            min-height: 100vh;
-            color: #050505;
-        }
-
-        /* ==== HEADER ==== */
-        .header {
-            background: white;
-            padding: 8px 16px;
-            box-shadow: 0 2px 4px rgba(42, 7, 198, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #0bc311;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        } 
-
-        .nav {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 4px 0;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            padding: 12px 16px;
-            cursor: pointer;
-            font-size: 15px;
-            color: #65676b;
-            border-radius: 8px;
-            transition: all 0.2s;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: white; min-height: 100vh; color: #050505; }
+        .header { background: white; padding: 8px 16px; box-shadow: 0 2px 4px rgba(42, 7, 198, 0.1); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 28px; font-weight: bold; color: #0bc311; }
+        .nav { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0; }
+        .nav-btn { background: none; border: none; padding: 12px 16px; cursor: pointer; font-size: 15px; color: #65676b; border-radius: 8px; font-weight: 500; white-space: nowrap; }
         .nav-btn:hover { background: #f0f2f5; }
-        .nav-btn.active {
-            color: #1877f2;
-            border-bottom: 3px solid #1877f2;
-        }
-
-        /* ==== LAYOUT ==== */
-        .container {
-            max-width: 1400px;
-            margin: 16px auto;
-            padding: 0 16px;
-            display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 16px;
-        }
-
-        .sidebar {
-            position: sticky;
-            top: 72px;
-            height: fit-content;
-        }
-
-        .sidebar-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s;
-            margin-bottom: 4px;
-        }
-
+        .nav-btn.active { color: #1877f2; border-bottom: 3px solid #1877f2; }
+        .container { max-width: 1400px; margin: 16px auto; padding: 0 16px; display: grid; grid-template-columns: 280px 1fr 320px; gap: 16px; }
+        .sidebar { position: sticky; top: 72px; height: fit-content; }
+        .sidebar-item { display: flex; align-items: center; padding: 12px; border-radius: 8px; cursor: pointer; margin-bottom: 4px; }
         .sidebar-item:hover { background: #e4e6eb; }
-        .sidebar-icon { font-size: 20px; margin-right: 12px; }
-
         .main-content { display: none; }
         .main-content.active { display: block; }
-
-        /* ==== SEMESTER BANNER ==== */
-        .semester-banner {
-            background: linear-gradient(135deg, #1877f2, #42b983);
-            color: white;
-            padding: 24px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        /* ==== POST CARDS ==== */
-        .create-post {
-            background: white;
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-avatar {
-            width: 40px; height: 40px; border-radius: 50%;
-            background: linear-gradient(135deg, #1877f2, #42b983);
-            color: white; display: flex; align-items: center;
-            justify-content: center; font-weight: 600; margin-right: 12px;
-        }
-
-        .post-input {
-            flex: 1; background: #f0f2f5; border: none;
-            border-radius: 24px; padding: 12px 16px;
-            font-size: 15px; cursor: pointer; color: #65676b;
-        }
-
-        .post-card {
-            background: white; border-radius: 8px;
-            margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
+        .semester-banner { background: linear-gradient(135deg, #1877f2, #42b983); color: white; padding: 24px; border-radius: 8px; margin-bottom: 16px; text-align: center; }
+        .create-post { background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b983); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; }
+        .post-input { flex: 1; background: #f0f2f5; border: none; border-radius: 24px; padding: 12px 16px; font-size: 15px; cursor: pointer; color: #65676b; }
+        .post-card { background: white; border-radius: 8px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
         .post-header { display: flex; padding: 16px; }
         .post-info h4 { font-size: 15px; font-weight: 600; }
         .post-meta { font-size: 13px; color: #65676b; }
         .post-content { padding: 0 16px 12px; font-size: 15px; line-height: 1.5; }
-
-        /* ==== COURSES DROPDOWN ==== */
-        .course-card {
-            background: white; border-radius: 8px; padding: 20px;
-            margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .units-dropdown-btn {
-            background: #f0f2f5; border: none; width: 100%;
-            padding: 10px; margin-top: 10px; border-radius: 6px;
-            cursor: pointer; font-weight: 600; text-align: left;
-            display: flex; justify-content: space-between;
-        }
-
-        .units-content { display: none; padding: 10px 0; }
-        .units-content.active { display: block; }
-        .unit-item {
-            background: #f8f9fa; padding: 8px 12px; border-radius: 4px;
-            margin-bottom: 5px; font-size: 14px; border-left: 3px solid #1877f2;
-        }
-
-        /* ==== TIMETABLE ==== */
+        .course-card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); }
+        .course-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .course-badge { background: #1877f2; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        .course-reg { color: #42b983; font-size: 12px; font-weight: 600; }
+        .course-title { font-weight: 600; margin-bottom: 4px; }
+        .course-info { font-size: 13px; color: #65676b; }
         .timetable-table { width: 100%; border-collapse: collapse; background: white; }
         .timetable-table th { background: #1877f2; color: white; padding: 12px; }
         .timetable-table td { border: 1px solid #e4e6eb; padding: 12px; text-align: center; }
         .class-item { background: linear-gradient(135deg, #1877f2, #42b983); color: white; border-radius: 4px; padding: 5px; font-size: 12px; }
-    /*map*/
-    .campus-map {
-    width: 100%;
-    height: 600px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    position: relative;
-    background: #f8fafc; /* Subtle slate background */
-    background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-    background-size: 20px 20px; /* Modern grid effect */
-    overflow: hidden;
-    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-}
-
-.map-building {
-    position: absolute;
-    background: white;
-    border: 2px solid #2563eb;
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 11px;
-    font-weight: 700;
-    color: #1e293b;
-    cursor: pointer;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    transition: all 0.2s ease;
-    user-select: none;
-}
-
-.map-building:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    background: #f0f9ff;
-    z-index: 50;
-}
-        /* ==== AI CHAT ==== */
-/* ==== AI CHAT VISUALS ==== */
-/* ---- Updated AI Chat Bubbles ---- */
-.message {
-    margin-bottom: 16px;
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-/* Aligns your messages to the right */
-.message.user {
-    flex-direction: row-reverse;
-}
-
-.message-avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #1877f2, #42b983);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
-    flex-shrink: 0;
-}
-
-.message-bubble {
-    max-width: 75%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 15px;
-    line-height: 1.5;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-/* AI styling (Left side, Gray) */
-.message.ai .message-bubble {
-    background: #f0f2f5;
-    color: #1c1e21;
-    border-bottom-left-radius: 4px;
-}
-
-/* User styling (Right side, Blue) */
-.message.user .message-bubble {
-    background: #1877f2;
-    color: white;
-    border-bottom-right-radius: 4px;
-}
-/* ---- AI Input Area Styling ---- */
-.chat-input-area {
-    padding: 16px;
-    border-top: 1px solid #e2e8f0;
-    display: flex;
-    gap: 12px;
-    background: white;
-}
-
-.chat-input {
-    flex: 1;
-    background: #f1f5f9;
-    border: 1px solid #e2e8f0;
-    border-radius: 24px;
-    padding: 12px 20px;
-    font-size: 15px;
-    outline: none;
-    transition: all 0.2s ease;
-}
-
-.chat-input:focus {
-    border-color: #1877f2;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1);
-}
-
-.chat-send {
-    background: #1877f2;
-    color: white;
-    border: none;
-    padding: 0 24px;
-    border-radius: 24px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.chat-send:hover {
-    background: #166fe5;
-}
-
-.chat-send:disabled {
-    background: #cbd5e1;
-    cursor: not-allowed;
-}
-
-#floatingLogoutBtn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: #e41e3f; /* Alert Red */
-    color: white;
-    border: none;
-    border-radius: 50px;
-    padding: 12px 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(228, 30, 63, 0.3);
-    z-index: 999; /* Stays above the Map and AI chat */
-    transition: all 0.3s ease;
-    font-weight: 600;
-    font-family: inherit;
-}
-
-#floatingLogoutBtn:hover {
-    background-color: #c61a36;
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(228, 30, 63, 0.4);
-}
-
-/* On mobile, show only the icon to save space */
-@media (max-width: 600px) {
-    .logout-text { display: none; }
-    #floatingLogoutBtn {
-        padding: 15px;
-        bottom: 20px;
-        right: 20px;
-    }
-}
-
-        /* ==== MODAL ==== */
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+        .campus-map { width: 100%; height: 600px; border: 1px solid #e2e8f0; border-radius: 12px; position: relative; background: #f8fafc; overflow: hidden; }
+        .map-building { position: absolute; background: white; border: 2px solid #2563eb; border-radius: 8px; padding: 10px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; text-align: center; transition: all 0.2s; }
+        .map-building:hover { transform: translateY(-3px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); background: #f0f9ff; z-index: 50; }
+        .message { margin-bottom: 16px; display: flex; gap: 10px; width: 100%; }
+        .message.user { flex-direction: row-reverse; }
+        .message-avatar { width: 35px; height: 35px; border-radius: 50%; background: linear-gradient(135deg, #1877f2, #42b983); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+        .message-bubble { max-width: 75%; padding: 12px 16px; border-radius: 18px; font-size: 15px; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .message.ai .message-bubble { background: #f0f2f5; color: #1c1e21; border-bottom-left-radius: 4px; }
+        .message.user .message-bubble { background: #1877f2; color: white; border-bottom-right-radius: 4px; }
+        .chat-input-area { padding: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 12px; background: white; }
+        .chat-input { flex: 1; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 24px; padding: 12px 20px; font-size: 15px; outline: none; }
+        .chat-input:focus { border-color: #1877f2; background: white; box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.1); }
+        .chat-send { background: #1877f2; color: white; border: none; padding: 0 24px; border-radius: 24px; font-weight: 600; cursor: pointer; }
+        .chat-send:hover { background: #166fe5; }
+        .chat-send:disabled { background: #cbd5e1; cursor: not-allowed; }
+        #floatingLogoutBtn { position: fixed; bottom: 30px; right: 30px; background-color: #e41e3f; color: white; border: none; border-radius: 50px; padding: 12px 20px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 12px rgba(228, 30, 63, 0.3); z-index: 999; font-weight: 600; }
+        #floatingLogoutBtn:hover { background-color: #c61a36; transform: scale(1.05); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; }
-
         @media (max-width: 1100px) { .container { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        @media (max-width: 600px) { .logout-text { display: none; } #floatingLogoutBtn { padding: 15px; bottom: 20px; right: 20px; } }
     </style>
 </head>
 <body>
+    <!-- Login Page -->
     <div id="loginPage" style="position: fixed; inset: 0; background: white; z-index: 2000; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-    <div class="logo" style="margin-bottom: 30px; font-size: 32px;">KHU Portal Login</div>
-    <div id="login-form">
-        <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Registration Number</label>
-            <input type="text" id="USER_REG" placeholder="e.g. BCSF/001/2022" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        <div class="logo" style="margin-bottom: 30px; font-size: 32px;">KHU Portal Login</div>
+        <div style="width: 100%; max-width: 400px; padding: 20px;">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Registration Number</label>
+                <input type="text" id="USER_REG" placeholder="e.g. BCSF/001/2022" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Password (ID/Birth Certificate Number)</label>
+                <input type="password" id="USER_ID" placeholder="Enter ID or Birth Certificate No." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+            </div>
+            <button onclick="handleLogin()" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">Login to Portal</button>
+            <p id="loginError" style="color: #e41e3f; font-size: 13px; margin-top: 15px; text-align: center; display: none;">Invalid credentials.</p>
         </div>
-        <div style="margin-bottom: 25px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #65676b; margin-bottom: 8px;">Password (ID/Birth Certificate Number)</label>
-            <input type="password" id="USER_ID" placeholder="Enter ID or Birth Certificate No." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
-        </div>
-        <button id="loginBtn" onclick="handleLogin()" style="width: 100%; padding: 14px; background: #1877f2; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-            Login to Portal
-        </button>
-        <p id="loginError" style="color: #e41e3f; font-size: 13px; margin-top: 15px; text-align: center; display: none;">Invalid credentials.</p>
     </div>
-</div>
 
+    <!-- Header -->
     <div class="header">
         <div class="logo">KHU-Be your brother's keeper</div>
         <div class="nav">
@@ -381,29 +93,31 @@
         </div>
     </div>
 
+    <!-- Main Container -->
     <div class="container">
+        <!-- Sidebar -->
         <div class="sidebar">
-           <div class="sidebar-item">
-    <span class="sidebar-icon">Profile</span>
-    <div>
-        <div id="displayUserName" style="font-weight: 600; font-size: 15px;">Guest User</div>
-        <div id="displayUserCourse" style="font-size: 13px; color: #65676b;">Not Logged In</div>
-        <button onclick="logout()" style="background: none; border: none; color: #e41e3f; font-size: 12px; cursor: pointer; padding: 0; margin-top: 5px; text-decoration: underline; font-family: inherit;">
-            Logout
-        </button>
-    </div>
-</div>
+            <div class="sidebar-item">
+                <span class="sidebar-icon">👤</span>
+                <div>
+                    <div id="displayUserName" style="font-weight: 600; font-size: 15px;">Guest User</div>
+                    <div id="displayUserCourse" style="font-size: 13px; color: #65676b;">Not Logged In</div>
+                    <button onclick="logout()" style="background: none; border: none; color: #e41e3f; font-size: 12px; cursor: pointer; padding: 0; margin-top: 5px; text-decoration: underline;">Logout</button>
+                </div>
+            </div>
             <div class="sidebar-item">📊 GPA: 3.8</div>
-            <div class="sidebar-item" id="adminLink" onclick="location.href='admin.html'" style="cursor:pointer; display:none;">⚙️ Admin Panel</div>
+            <div class="sidebar-item" id="adminLink" onclick="location.href='admin.html'" style="cursor: pointer; display: none;">⚙️ Admin Panel</div>
         </div>
 
+        <!-- Main Content -->
         <div>
+            <!-- Feed Section -->
             <div id="feed" class="main-content active">
                 <div class="semester-banner"><h2>Fall 2025 Semester</h2><p>Registration for Spring 2026 starts Dec 15</p></div>
                 <div class="create-post">
-                    <div style="display:flex; align-items:center;">
-                        <div class="user-avatar">JM</div>
-                        <input type="text" class="post-input" placeholder="What's on your mind, John?" onclick="openPostModal()" readonly>
+                    <div style="display: flex; align-items: center;">
+                        <div class="user-avatar">GU</div>
+                        <input type="text" class="post-input" placeholder="What's on your mind?" onclick="openPostModal()" readonly>
                     </div>
                 </div>
                 <div id="postsContainer">
@@ -415,77 +129,44 @@
                         <div class="post-header"><div class="user-avatar">SC</div><div class="post-info"><h4>Student Council</h4><div class="post-meta">5 hours ago</div></div></div>
                         <div class="post-content">Tech Symposium 2025 registration is now open! Join us for a week of innovation.</div>
                     </div>
-                    <div class="post-card">
-                        <div class="post-header"><div class="user-avatar">KH</div><div class="post-info"><h4>KHU Admin</h4><div class="post-meta">Yesterday</div></div></div>
-                        <div class="post-content">Please ensure all tuition fees are cleared before the start of the examination period.</div>
-                    </div>
                 </div>
             </div>
 
+            <!-- Courses Section -->
             <div id="courses" class="main-content">
-                <h1 style="margin-bottom:20px;">Registered Courses</h1>
+                <h1 style="margin-bottom: 20px;">Registered Courses</h1>
                 <div id="coursesContainer"></div>
             </div>
 
-         <div id="timetable" class="main-content">
-                <div class="timetable-card">
-                    <div class="timetable-title">Weekly Schedule - Fall 2025</div>
+            <!-- Timetable Section -->
+            <div id="timetable" class="main-content">
+                <div style="background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                    <h2 style="margin-bottom: 16px;">Weekly Schedule - Fall 2025</h2>
                     <table class="timetable-table">
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Monday</th>
-                                <th>Tuesday</th>
-                                <th>Wednesday</th>
-                                <th>Thursday</th>
-                                <th>Friday</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Time</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th><th>Thursday</th><th>Friday</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td class="time-col">7:00 AM - 1:00 PM</td>
-                                <td></td>
-                                <td><div class="class-item"><div class="class-code">CS302</div><div class="class-venue">Room LH-4</div></div></td>
-                                <td></td>
-                                <td><div class="class-item"><div class="class-code">CS302</div><div class="class-venue">Room LH-4</div></div></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">1:00 PM - 4:00 PM</td>
-                                <td><div class="class-item"><div class="class-code">CS301</div><div class="class-venue">Room CS-101</div></div></td>
-                                <td></td>
-                                <td><div class="class-item"><div class="class-code">CS301</div><div class="class-venue">Room CS-101</div></div></td>
-                                <td></td>
-                                <td><div class="class-item"><div class="class-code">CS303</div><div class="class-venue">Lab B-12</div></div></td>
-                            </tr>
-                            <tr>
-                                <td class="time-col">4:00 PM - 7:00 PM</td>
-                                <td><div class="class-item"><div class="class-code">CS308</div><div class="class-venue">Room CS-103</div></div></td>
-                                <td></td>
-                                <td><div class="class-item"><div class="class-code">CS308</div><div class="class-venue">Room CS-103</div></div></td>
-                                <td></td>
-                                <td><div class="class-item"><div class="class-code">CS304</div><div class="class-venue">Lab C-12</div></div></td>
-                            </tr>
+                            <tr><td>7:00 AM - 1:00 PM</td><td></td><td><div class="class-item"><div>CS302</div><div>Room LH-4</div></div></td><td></td><td><div class="class-item"><div>CS302</div><div>Room LH-4</div></div></td><td></td></tr>
+                            <tr><td>1:00 PM - 4:00 PM</td><td><div class="class-item"><div>CS301</div><div>Room CS-101</div></div></td><td></td><td><div class="class-item"><div>CS301</div><div>Room CS-101</div></div></td><td></td><td><div class="class-item"><div>CS303</div><div>Lab B-12</div></div></td></tr>
+                            <tr><td>4:00 PM - 7:00 PM</td><td><div class="class-item"><div>CS308</div><div>Room CS-103</div></div></td><td></td><td><div class="class-item"><div>CS308</div><div>Room CS-103</div></div></td><td></td><td><div class="class-item"><div>CS304</div><div>Lab C-12</div></div></td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-
-          <div id="map" class="main-content">
-                <div class="map-container">
-                    <div class="map-title">Campus Map</div>
-                    <div class="campus-map" id="campusMap"></div>
-                </div>
+            <!-- Map Section -->
+            <div id="map" class="main-content">
+                <h2 style="margin-bottom: 16px;">Campus Map</h2>
+                <div class="campus-map" id="campusMap"></div>
             </div>
 
+            <!-- AI Section -->
             <div id="ai" class="main-content">
-                <div class="ai-container">
-                    <div class="ai-header">
-                        <div class="ai-avatar">AI</div>
+                <div style="background: white; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden;">
+                    <div style="padding: 16px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px;">
+                        <div class="user-avatar" style="background: #1877f2;">AI</div>
                         <h3>Highlands AI</h3>
                     </div>
-                    <div class="chat-messages" id="chatMessages"></div>
+                    <div id="chatMessages" style="height: 400px; overflow-y: auto; padding: 16px;"></div>
                     <div class="chat-input-area">
                         <input type="text" class="chat-input" id="chatInput" placeholder="Ask anything...">
                         <button class="chat-send" id="sendBtn">Send</button>
@@ -493,93 +174,54 @@
                 </div>
             </div>
         </div>
+    </div>
 
-            <div id="ai" class="main-content">
-                <div class="ai-container">
-                    <div class="post-header" style="border-bottom:1px solid #eee;">
-                        <div class="user-avatar" style="background:#1877f2">AI</div>
-                        <div><h4>Highlands AI Assistant</h4><small style="color:#42b983">● Online</small></div>
-                    </div>
-                    <div class="chat-messages" id="chatMessages">
-                        <div class="message ai">
-                            <div class="user-avatar">AI</div>
-                            <div class="message-bubble">
-                                Hello John! I am your personal campus assistant. I can help with:<br>
-                                • Course schedules & GPA<br>
-                                • Campus navigation<br>
-                                • Registration deadlines
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat-input-area">
-                        <input type="text" class="chat-input" id="chatInput" placeholder="Ask me anything about KENYA HIGHLANDS...">
-                        <button onclick="sendMessage()" style="background:#1877f2; color:white; border:none; padding:10px 20px; border-radius:20px; cursor:pointer;">Send</button>
-                    </div>
+    <!-- Post Modal -->
+    <div id="postModal" class="modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 16px;">Create Post</h3>
+            <textarea id="postContent" style="width: 100%; height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; resize: none;" placeholder="What's on your mind?"></textarea>
+            <div style="display: flex; justify-content: space-between; margin-top: 16px;">
+                <span id="charCount" style="color: #65676b; font-size: 13px;">0/280</span>
+                <div>
+                    <button onclick="closePostModal()" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; background: white; cursor: pointer; margin-right: 8px;">Cancel</button>
+                    <button onclick="submitPost()" style="padding: 8px 16px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer;">Post</button>
                 </div>
-            </div>
-        </div>
-
-        <div class="sidebar">
-            <div class="post-card" style="padding:15px;">
-                <h4>Upcoming Events</h4>
-                <div style="margin-top:10px; font-size:14px;">📅 Tech Symposium: Dec 12</div>
-                <div style="margin-top:5px; font-size:14px;">🔔 Registration: Dec 15</div>
             </div>
         </div>
     </div>
 
-    <div class="modal" id="postModal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: 18px; font-weight: 600;">Create Post</h3>
-                <button id="closePostModal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #65676b;">&times;</button>
-            </div>
-            <form id="postForm">
-                <div class="form-group">
-                    <textarea 
-                        id="postContent" 
-                        style="width: 100%; height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; resize: none; font-family: inherit;" 
-                        placeholder="What's on your mind?"
-                        maxlength="280"
-                    ></textarea>
-                    <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
-                        <span id="charCount" style="font-size: 13px; color: #65676b;">0/280</span>
-                    </div>
-                </div>
-                <button type="button" id="submitPostBtn" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Post</button>
-            </form>
-        </div>
-    </div>
+    <!-- Floating Logout Button -->
     <button id="floatingLogoutBtn" onclick="logout()" title="Logout">
-    <span style="font-size: 20px;">➔</span>
-    <span class="logout-text">Logout</span>
-</button>
-</body>
-    <script>
-        function logout() {
-    // 1. Clear the specific user session key
-    localStorage.removeItem('khu_user');
-    
-    // 2. Refresh the page to trigger the checkLoginStatus() and show loginPage
-    window.location.reload();
-}
+        <span style="font-size: 20px;">➔</span>
+        <span class="logout-text">Logout</span>
+    </button>
 
-        // LOGIN HANDLER
+    <script>
+        // Course data
+        const courses = [
+            { code: "CS301", title: "Advanced Algorithms", instructor: "Prof. James Otieno", units: ["Complexity Analysis", "Dynamic Programming", "Graph Algorithms", "NP-Completeness"] },
+            { code: "CS302", title: "Web Development", instructor: "Dr. Sarah Kimani", units: ["HTML/CSS/JS", "React Framework", "Node.js & Express", "Database Integration"] },
+            { code: "CS303", title: "Database Systems", instructor: "Dr. Michael Ochieng", units: ["SQL & NoSQL", "Normalization", "Indexing", "Transactions"] },
+            { code: "CS304", title: "Software Engineering", instructor: "Prof. Grace Wanjiku", units: ["Agile Methodology", "Design Patterns", "Testing Strategies", "DevOps"] }
+        ];
+
+        // Building data for campus map
+        const buildings = [
+            { name: "Main Library", left: 20, top: 20, width: 120, height: 80 },
+            { name: "CS Building", left: 45, top: 35, width: 100, height: 70 },
+            { name: "Admin Block", left: 10, top: 60, width: 110, height: 60 },
+            { name: "Sports Complex", left: 70, top: 15, width: 130, height: 90 }
+        ];
+
+        // Login handler
         async function handleLogin() {
-            // Brute force selection
             const regElement = document.getElementById('USER_REG');
             const idElement = document.getElementById('USER_ID');
             
-            // If it's still null, we alert exactly what is missing
-            if (!regElement) { 
-                alert("CRITICAL ERROR: Input with id 'USER_REG' not found!"); 
-                console.error("CRITICAL ERROR: Element with id 'USER_REG' not found!");
-                return; 
-            }
-            if (!idElement) { 
-                alert("CRITICAL ERROR: Input with id 'USER_ID' not found!"); 
-                console.error("CRITICAL ERROR: Element with id 'USER_ID' not found!");
-                return; 
+            if (!regElement || !idElement) {
+                console.error('Login elements not found');
+                return;
             }
 
             const regNo = regElement.value.trim();
@@ -587,12 +229,10 @@
 
             console.log("Attempting login for:", regNo);
 
-            // Clear previous error
             const errorMsg = document.getElementById('loginError');
             if (errorMsg) errorMsg.style.display = 'none';
 
             try {
-                console.log("Sending POST to /api/login with:", { regNo, idNumber });
                 const response = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -612,126 +252,106 @@
                     };
                     localStorage.setItem('khu_user', JSON.stringify(sessionData));
                     
-                    // Role-Based Redirects
-                    if (user.role === 'admin' || user.isAdmin === true) {
-                        // Admin redirects to admin.html
+                    // Hide login page
+                    document.getElementById('loginPage').style.display = 'none';
+                    
+                    // Update UI
+                    updateProfileUI(user);
+                    
+                    // Redirect based on role
+                    if (user.isAdmin || user.role === 'admin') {
                         window.location.href = 'admin.html';
-                    } else if (user.role === 'student' || !user.isAdmin) {
-                        // Student stays on index.html - show feed section
-                        document.getElementById('loginPage').style.display = 'none';
-                        showFeedSection();
-                        updateProfileUI(user);
                     } else {
-                        // Default/Fallback - no role matched
-                        console.error('Unknown user role:', user.role);
-                        if (errorMsg) {
-                            errorMsg.style.display = 'block';
-                            errorMsg.textContent = "Unknown user role. Please contact support.";
-                        }
+                        showSection('feed', { target: document.querySelector('.nav-btn') });
                     }
                 } else {
                     if (errorMsg) {
                         errorMsg.style.display = 'block';
                         errorMsg.textContent = data.error || "Invalid credentials.";
-                    } else {
-                        alert(data.error || "Login Failed");
                     }
                 }
             } catch (err) {
-                console.error("Fetch error:", err);
+                console.error("Login error:", err);
                 if (errorMsg) {
                     errorMsg.style.display = 'block';
                     errorMsg.textContent = "Connection failed. Check your internet.";
-                } else {
-                    alert("Connection failed. Check your internet.");
                 }
             }
         }
 
-        // Attach event listener using module scope
-        document.getElementById('loginBtn').addEventListener('click', handleLogin);
-
-        // Helper function to show feed section after login
-        function showFeedSection() {
-            // Hide all sections first
-            document.querySelectorAll('.main-content').forEach(s => s.classList.remove('active'));
-            
-            // Show feed section
-            const feedSection = document.getElementById('feed');
-            if (feedSection) {
-                feedSection.classList.add('active');
-            }
-            
-            // Set Feed nav button as active
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            const feedBtn = document.querySelector(".nav-btn[onclick*='feed']");
-            if (feedBtn) {
-                feedBtn.classList.add('active');
-            }
-        }
-
-        // Function to switch between different page sections
+        // Show section
         function showSection(sectionId, event) {
-            document.querySelectorAll('.main-content').forEach(section => {
-                section.classList.remove('active');
-            });
+            document.querySelectorAll('.main-content').forEach(s => s.classList.remove('active'));
             const target = document.getElementById(sectionId);
             if (target) target.classList.add('active');
             
-            // Update nav button state
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             if (event && event.target) {
-                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
                 event.target.classList.add('active');
             }
         }
 
-        // Function to update the student's name/course in the UI
-        function updateProfileUI(student) {
+        // Update profile UI
+        function updateProfileUI(user) {
             const nameDisplay = document.getElementById('displayUserName');
             const courseDisplay = document.getElementById('displayUserCourse');
             
-            if (nameDisplay) nameDisplay.textContent = student.firstName + ' ' + student.lastName;
-            if (courseDisplay) courseDisplay.textContent = student.course;
+            if (nameDisplay) nameDisplay.textContent = user.firstName + ' ' + user.lastName;
+            if (courseDisplay) courseDisplay.textContent = user.course || 'Student';
             
-            // Also update sidebar
-            const sidebarProfile = document.querySelector('.sidebar-item div');
-            if (sidebarProfile) {
-                sidebarProfile.innerHTML = `
-                    <div style="font-weight: 600; font-size: 15px;">${student.firstName} ${student.lastName}</div>
-                    <div style="font-size: 13px; color: #65676b;">${student.course}</div>
-                `;
+            // Show admin link for admins
+            if (user.isAdmin || user.role === 'admin') {
+                document.getElementById('adminLink').style.display = 'flex';
             }
         }
-    </script>
 
-            // DROPDOWN HANDLER FOR COURSE UNITS
-            function toggleUnits(index) {
-                const unitDiv = document.getElementById(`units-${index}`);
-                if (unitDiv) {
-                    unitDiv.style.display = unitDiv.style.display === 'none' ? 'block' : 'none';
-                }
-            }
-        const courses = [
-            { code: "CS301", title: "Advanced Algorithms", instructor: "Prof. James Otieno", units: ["Complexity Analysis", "Dynamic Programming", "Graph Algorithms", "NP-Completeness"] },
-            { code: "CS302", title: "Web Development", instructor: "Dr. Sarah Kimani", units: ["HTML/CSS/JS", "React Framework", "Node.js & Express", "Database Integration"] },
-            { code: "CS303", title: "Database Systems", instructor: "Dr. Michael Ochieng", units: ["SQL & NoSQL", "Normalization", "Indexing", "Transactions"] },
-            { code: "CS304", title: "Software Engineering", instructor: "Prof. Grace Wanjiku", units: ["Agile Methodology", "Design Patterns", "Testing Strategies", "DevOps"] }
-        ];
-
-        const buildings = [
-            { name: "Main Library", left: 20, top: 20, width: 120, height: 80 },
-            { name: "CS Building", left: 45, top: 35, width: 100, height: 70 },
-            { name: "Admin Block", left: 10, top: 60, width: 110, height: 60 },
-            { name: "Sports Complex", left: 70, top: 15, width: 130, height: 90 }
-        ];
-
-        function showSection(id, event) {
-            document.querySelectorAll('.main-content').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        // Logout
+        function logout() {
+            localStorage.removeItem('khu_user');
+            window.location.reload();
         }
 
+        // Post modal
+        function openPostModal() {
+            document.getElementById('postModal').classList.add('active');
+        }
+
+        function closePostModal() {
+            document.getElementById('postModal').classList.remove('active');
+            document.getElementById('postContent').value = '';
+            document.getElementById('charCount').textContent = '0/280';
+        }
+
+        function submitPost() {
+            const content = document.getElementById('postContent').value.trim();
+            if (!content) return;
+            
+            const user = JSON.parse(localStorage.getItem('khu_user') || '{}');
+            const name = user.firstName ? user.firstName + ' ' + user.lastName : 'Guest User';
+            
+            const postCard = document.createElement('div');
+            postCard.className = 'post-card';
+            postCard.innerHTML = `
+                <div class="post-header">
+                    <div class="user-avatar">${name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}</div>
+                    <div class="post-info"><h4>${name}</h4><div class="post-meta">Just now</div></div>
+                </div>
+                <div class="post-content">${escapeHtml(content)}</div>
+            `;
+            
+            const container = document.getElementById('postsContainer');
+            container.insertBefore(postCard, container.firstChild);
+            closePostModal();
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Render courses
         function renderCourses() {
             const container = document.getElementById('coursesContainer');
             container.innerHTML = '';
@@ -745,245 +365,116 @@
                     </div>
                     <div class="course-title">${c.title}</div>
                     <div class="course-info">Instructor: ${c.instructor}</div>
-                    <button class="toggle-units-btn" data-index="${index}" style="width:100%; margin-top:10px; padding:8px; cursor:pointer; background:#f0f2f5; border:none; border-radius:4px;">
-                        Show/Hide Units ▼
-                    </button>
-                    <div class="units-container" data-index="${index}" style="display:none; margin-top:10px;">
-                        ${c.units.map(u => `<div class="unit-item">${u}</div>`).join('')}
-                    </div>
                 `;
-                
-                // Add event listener programmatically
-                const toggleBtn = el.querySelector('.toggle-units-btn');
-                const unitsContainer = el.querySelector('.units-container');
-                toggleBtn.addEventListener('click', () => {
-                    unitsContainer.style.display = unitsContainer.style.display === 'none' ? 'block' : 'none';
-                    toggleBtn.textContent = unitsContainer.style.display === 'none' ? 'Show/Hide Units ▼' : 'Hide Units ▲';
-                });
-                
                 container.appendChild(el);
             });
         }
 
-
-        function toggleUnits(index) {
-            document.getElementById(`units-${index}`).classList.toggle('active');
+        // Render map
+        function renderMap() {
+            const map = document.getElementById('campusMap');
+            if (!map) return;
+            map.innerHTML = '';
+            buildings.forEach(b => {
+                const el = document.createElement('div');
+                el.className = 'map-building';
+                el.style.left = b.left + '%';
+                el.style.top = b.top + '%';
+                el.style.width = b.width + 'px';
+                el.style.height = b.height + 'px';
+                el.textContent = b.name;
+                el.onclick = () => alert(`${b.name}\nClick to view details`);
+                map.appendChild(el);
+            });
         }
 
-            //  renderMap 
-    function renderMap() {
-        const map = document.getElementById('campusMap');
-        if (!map) return;
-        map.innerHTML = '';
+        // AI Chat
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.innerHTML = `
+                <div class="message-avatar">${sender === 'user' ? 'ME' : 'AI'}</div>
+                <div class="message-bubble">${text}</div>
+            `;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
 
-        buildings.forEach(b => {
-            const el = document.createElement('div');
-            el.className = 'map-building';
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const userText = chatInput.value.trim();
+            if (!userText) return;
             
-            // Fix: Use numerical values with percentage/pixel units
-            el.style.left = b.left + '%';
-            el.style.top = (b.top || 20) + '%'; // Default top if missing
-            el.style.width = b.width + 'px';
-            el.style.height = b.height + 'px';
+            addMessage(userText, 'user');
+            chatInput.value = '';
             
-            el.textContent = b.name;
+            // Simple AI response
+            let response = "I'm your Highlands AI assistant. I can help with courses, schedule, and campus info.";
+            const lower = userText.toLowerCase();
+            if (lower.includes('hi') || lower.includes('hello')) {
+                response = "Hello! How can I help you today?";
+            } else if (lower.includes('course')) {
+                response = `You are registered for: ${courses.map(c => c.code).join(', ')}. Which one would you like to know more about?`;
+            } else if (lower.includes('gpa')) {
+                response = "Your current GPA is 3.8. Keep up the great work!";
+            } else if (lower.includes('where')) {
+                response = "Check the Campus Map section for building locations.";
+            }
             
-            el.onclick = () => {
-                alert(`${b.name}\nType: ${getBuildingType(b.type)}`);
-            };
-            
-            map.appendChild(el);
-        });
-    }
+            setTimeout(() => addMessage(response, 'ai'), 500);
+        }
 
-
-// Add this helper function to improve visual variety
-// ==== STEP 2: INTERACTIVE AI LOGIC ====
-
-// 1. Helper to add messages to the UI
-function addMessage(text, sender) {
-    const chatMessages = document.getElementById('chatMessages');
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${sender}`;
-    msgDiv.innerHTML = `
-        <div class="message-avatar">${sender === 'user' ? 'JM' : 'AI'}</div>
-        <div class="message-bubble">${text}</div>
-    `;
-    chatMessages.appendChild(msgDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-// 2. Typing indicators
-function showTyping() {
-    const chatMessages = document.getElementById('chatMessages');
-    const typing = document.createElement('div');
-    typing.className = 'message ai';
-    typing.id = 'typingIndicator';
-    typing.innerHTML = `
-        <div class="message-avatar">AI</div>
-        <div class="message-bubble">...</div>
-    `;
-    chatMessages.appendChild(typing);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
-
-function removeTyping() {
-    const typing = document.getElementById('typingIndicator');
-    if (typing) typing.remove();
-}
-
-// 3. The Interactive Logic
-function sendMessage() {
-    const chatInput = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const userText = chatInput.value.trim();
-    const lowerText = userText.toLowerCase();
-
-    if (!userText) return;
-
-    // Display your message
-    addMessage(userText, 'user');
-    chatInput.value = '';
-    sendBtn.disabled = true;
-
-    // Show AI "Thinking"
-    showTyping();
-
-    setTimeout(() => {
-        removeTyping();
-        let response = "I'm not sure about that. Try asking about your GPA, courses, or where a building is!";
-
-        // Logic to answer questions from your data
-        if (lowerText.includes('hi') || lowerText.includes('hello')) {
-            response = "Hello John! How can I help you with your Highlands studies today?";
-        } 
-        else if (lowerText.includes('gpa')) {
-            response = "Your current GPA is 3.8. You're doing great!";
-        } 
-        else if (lowerText.includes('course') || lowerText.includes('class')) {
-            const list = courses.map(c => c.code).join(', ');
-            response = `You are registered for: ${list}. Which one should we look at?`;
-        } 
-        else if (lowerText.includes('where is')) {
-            const bld = buildings.find(b => lowerText.includes(b.name.toLowerCase()));
-            if (bld) {
-                response = `The ${bld.name} is located at ${bld.left}% Left and ${bld.top}% Top on your map.`;
-            } else {
-                response = "I couldn't find that building. Try asking 'Where is the Main Library?'";
+        // Check login status on load
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('khu_user');
+            if (savedUser) {
+                try {
+                    const user = JSON.parse(savedUser);
+                    const thirtyMinutes = 30 * 60 * 1000;
+                    const now = Date.now();
+                    if (now - user.loginTime < thirtyMinutes) {
+                        document.getElementById('loginPage').style.display = 'none';
+                        updateProfileUI(user);
+                        if (user.isAdmin || user.role === 'admin') {
+                            document.getElementById('adminLink').style.display = 'flex';
+                        }
+                    } else {
+                        logout();
+                    }
+                } catch (e) {
+                    console.error('Error parsing user:', e);
+                }
             }
         }
 
-        addMessage(response, 'ai');
-        sendBtn.disabled = false;
-    }, 800);
-}
-        function appendMsg(text, sender) {
-            const chat = document.getElementById('chatMessages');
-            const div = document.createElement('div');
-            div.className = `message ${sender}`;
-            div.innerHTML = `<div class="user-avatar">${sender === 'user' ? 'JM' : 'AI'}</div><div class="message-bubble">${text}</div>`;
-            chat.appendChild(div);
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        function openPostModal() { document.getElementById('postModal').classList.add('active'); }
-        function closePostModal() { document.getElementById('postModal').classList.remove('active'); }
-        function submitPost() {
-            const text = document.getElementById('postText').value;
-            if(!text) return;
-            const post = document.createElement('div');
-            post.className = 'post-card';
-            post.innerHTML = `<div class="post-header"><div class="user-avatar">JM</div><div class="post-info"><h4>John Mwangi</h4><div class="post-meta">Just now</div></div></div><div class="post-content">${text}</div>`;
-            document.getElementById('postsContainer').prepend(post);
-            closePostModal();
-            document.getElementById('postText').value = '';
-        }
-
-        // 1. Define these functions globally (outside of any listeners)
-function checkLoginStatus() {
-    const savedUser = localStorage.getItem('khu_user');
-    if (savedUser) {
-        const user = JSON.parse(savedUser);
-        const thirtyMinutes = 30 * 60 * 1000;
-        const now = Date.now();
-
-        if (now - user.loginTime < thirtyMinutes) {
-            document.getElementById('loginPage').style.display = 'none';
-            // This line ensures the sidebar shows the correct name after refresh
-            updateProfileUI(user);
-            
-            // Show admin link only for admin users
-            if (user.userType === 'admin') {
-                document.getElementById('adminLink').style.display = 'flex';
-            }
-        } else {
-            logout();
-        }
-    }
-}
-
-function logout() {
-    localStorage.removeItem('khu_user');
-    window.location.reload(); // Returns to login page
-}
-
-/// ==== STEP 5: PERSONALIZED AI INITIALIZATION ====
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. Run security check (Session Management)
-    checkLoginStatus(); 
-
-    // 2. Render standard components
-    renderCourses();
-    renderMap();
-
-    // 3. Get the logged-in user's name
-    let userName = "Student"; // Default fallback
-    const savedUser = localStorage.getItem('khu_user');
-    
-    if (savedUser) {
-        const user = JSON.parse(savedUser);
-        userName = user.name; // Get the actual name (e.g., "Jane Doe")
-    }
-
-    // 4. Add the Personalized AI Greeting
-    const chatMessages = document.getElementById('chatMessages');
-    if (chatMessages && chatMessages.children.length === 0) {
-        addMessage(`Hello ${userName}! I'm Highlands AI, your personal campus assistant. I can help you with:
-            <br><br>• Course schedules & assignments
-            <br>• Campus navigation & building locations
-            <br>• Registration deadlines
-            <br>• GPA calculations
-            <br><br>How can I assist you today?`, 'ai');
-    }
-
-    // 5. Re-enable listeners
-    const chatInput = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendBtn');
-    
-    if (chatInput) {
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
+        // Character count for post
+        document.getElementById('postContent')?.addEventListener('input', function() {
+            const count = this.value.length;
+            document.getElementById('charCount').textContent = count + '/280';
+            document.getElementById('charCount').style.color = count > 280 ? '#e41e3f' : '#65676b';
         });
-    }
-    
-    if (sendBtn) {
-        sendBtn.onclick = sendMessage;
-    }
-});
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkLoginStatus();
+            renderCourses();
+            renderMap();
+            
+            // Chat send button
+            document.getElementById('sendBtn')?.addEventListener('click', sendMessage);
+            document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') sendMessage();
+            });
+            
+            // AI Greeting
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages && chatMessages.children.length === 0) {
+                const user = JSON.parse(localStorage.getItem('khu_user') || '{}');
+                const name = user.firstName || 'Student';
+                addMessage(`Hello ${name}! I'm Highlands AI. I can help with courses, schedules, and campus questions. How can I assist you?`, 'ai');
+            }
+        });
     </script>
-    <!-- Firebase SDK for Client-side -->
-    <script>
-        // Firebase Configuration - set as global variables for non-module scripts
-        window.FIREBASE_API_KEY = "AIzaSyDGDjCx7eUgpurU64fH9NkhxVErei8Ug6I";
-        window.FIREBASE_AUTH_DOMAIN = "khu-portal.firebaseapp.com";
-        window.FIREBASE_PROJECT_ID = "khu-portal";
-        window.FIREBASE_STORAGE_BUCKET = "khu-portal.firebasestorage.app";
-        window.FIREBASE_MESSAGING_SENDER_ID = "31515014542";
-        window.FIREBASE_APP_ID = "1:31515014542:web:a02fb67aa28164b4c4e0df";
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="feed.js"></script>
+</body>
 </html>
