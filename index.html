@@ -564,14 +564,6 @@
     window.location.reload();
 }
 
-        // Export functions to global scope for inline onclick handlers
-        window.showSection = showSection;
-        window.logout = logout;
-        window.openPostModal = openPostModal;
-        window.sendMessage = sendMessage;
-        window.showFeedSection = showFeedSection;
-        window.updateProfileUI = updateProfileUI;
-
         // LOGIN HANDLER
         async function handleLogin() {
             // Brute force selection
@@ -677,37 +669,40 @@
                 feedBtn.classList.add('active');
             }
         }
+
+        // Function to switch between different page sections
+        function showSection(sectionId, event) {
+            document.querySelectorAll('.main-content').forEach(section => {
+                section.classList.remove('active');
+            });
+            const target = document.getElementById(sectionId);
+            if (target) target.classList.add('active');
+            
+            // Update nav button state
+            if (event && event.target) {
+                document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+        }
+
+        // Function to update the student's name/course in the UI
+        function updateProfileUI(student) {
+            const nameDisplay = document.getElementById('displayUserName');
+            const courseDisplay = document.getElementById('displayUserCourse');
+            
+            if (nameDisplay) nameDisplay.textContent = student.firstName + ' ' + student.lastName;
+            if (courseDisplay) courseDisplay.textContent = student.course;
+            
+            // Also update sidebar
+            const sidebarProfile = document.querySelector('.sidebar-item div');
+            if (sidebarProfile) {
+                sidebarProfile.innerHTML = `
+                    <div style="font-weight: 600; font-size: 15px;">${student.firstName} ${student.lastName}</div>
+                    <div style="font-size: 13px; color: #65676b;">${student.course}</div>
+                `;
+            }
+        }
     </script>
-function updateProfileUI(student) {
-    const nameDisplay = document.getElementById('displayUserName');
-    const courseDisplay = document.getElementById('displayUserCourse');
-    
-    if (nameDisplay && courseDisplay) {
-        nameDisplay.textContent = student.name;
-        courseDisplay.textContent = student.course;
-    }
-}
-
-// Helper function to update the Sidebar Profile
-function updateProfileUI(student) {
-    const sidebarProfile = document.querySelector('.sidebar-item div');
-    if (sidebarProfile) {
-        sidebarProfile.innerHTML = `
-            <div style="font-weight: 600; font-size: 15px;">${student.name}</div>
-            <div style="font-size: 13px; color: #65676b;">${student.course}</div>
-        `;
-    }
-}// ==== ADMIN DATABASE ====
-        const adminDB = [
-            { username: "admin", password: "admin123", name: "System Administrator", role: "admin" }
-        ];
-
-        // ==== STUDENT DATABASE (Demo accounts - remove or replace with Firebase) ====
-        const studentDB = [
-            { regNo: "BCSF/001/2022", phone: "0712345678", name: "John Mwangi", course: "Computer Science" },
-            { regNo: "BCSF/002/2022", phone: "0722000000", name: "Jane Doe", course: "Information Technology" },
-            { regNo: "BCSF/003/2022", phone: "0733111222", name: "Sam Kibet", course: "Software Engineering" }
-        ];
 
             // DROPDOWN HANDLER FOR COURSE UNITS
             function toggleUnits(index) {
