@@ -8,24 +8,32 @@ const API_BASE_URL = '/api';
 let firebaseApp;
 let db;
 
+// Get Firebase config from global variables (set in admin.html) or use fallbacks
+const getFirebaseConfig = () => {
+    return {
+        apiKey: window.VITE_FIREBASE_API_KEY || window.FIREBASE_API_KEY || "YOUR_API_KEY",
+        authDomain: window.VITE_FIREBASE_AUTH_DOMAIN || window.FIREBASE_AUTH_DOMAIN || "your-project.firebaseapp.com",
+        projectId: window.VITE_FIREBASE_PROJECT_ID || window.FIREBASE_PROJECT_ID || "your-project-id",
+        storageBucket: window.VITE_FIREBASE_STORAGE_BUCKET || window.FIREBASE_STORAGE_BUCKET || "your-project.appspot.com",
+        messagingSenderId: window.VITE_FIREBASE_MESSAGING_SENDER_ID || window.FIREBASE_MESSAGING_SENDER_ID || "123456789",
+        appId: window.VITE_FIREBASE_APP_ID || window.FIREBASE_APP_ID || "1:123456789:web:abc123"
+    };
+};
+
 try {
-    if (typeof firebase !== 'undefined' && 
-        import.meta.env?.VITE_FIREBASE_API_KEY && 
-        import.meta.env?.VITE_FIREBASE_API_KEY !== "YOUR_API_KEY") {
+    if (typeof firebase !== 'undefined') {
+        const config = getFirebaseConfig();
         
-        firebaseApp = firebase.initializeApp({
-            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-            appId: import.meta.env.VITE_FIREBASE_APP_ID
-        });
-        
-        db = firebaseApp.firestore();
-        console.log('Firebase initialized successfully');
+        // Only initialize if we have a real API key
+        if (config.apiKey && config.apiKey !== "YOUR_API_KEY" && config.apiKey !== "undefined") {
+            firebaseApp = firebase.initializeApp(config);
+            db = firebaseApp.firestore();
+            console.log('Firebase initialized successfully');
+        } else {
+            console.log('Firebase not configured - using API only mode');
+        }
     } else {
-        console.log('Firebase not configured - using API only mode');
+        console.log('Firebase SDK not loaded - using API only mode');
     }
 } catch (error) {
     console.log('Firebase initialization skipped:', error.message);
