@@ -528,11 +528,25 @@
     </div>
 
     <div class="modal" id="postModal">
-        <div class="modal-content">
-            <h3>Create Post</h3>
-            <textarea id="postText" style="width:100%; height:100px; margin-top:10px; padding:10px; border:1px solid #ddd;"></textarea>
-            <button class="btn-primary" onclick="submitPost()">Post</button>
-            <button class="btn-primary" style="background:#eee; color:#333;" onclick="closePostModal()">Cancel</button>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 18px; font-weight: 600;">Create Post</h3>
+                <button id="closePostModal" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #65676b;">&times;</button>
+            </div>
+            <form id="postForm">
+                <div class="form-group">
+                    <textarea 
+                        id="postContent" 
+                        style="width: 100%; height: 120px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; resize: none; font-family: inherit;" 
+                        placeholder="What's on your mind?"
+                        maxlength="280"
+                    ></textarea>
+                    <div style="display: flex; justify-content: flex-end; margin-top: 4px;">
+                        <span id="charCount" style="font-size: 13px; color: #65676b;">0/280</span>
+                    </div>
+                </div>
+                <button type="button" id="submitPostBtn" class="btn btn-primary" style="width: 100%; margin-top: 12px;">Post</button>
+            </form>
         </div>
     </div>
     <button id="floatingLogoutBtn" onclick="logout()" title="Logout">
@@ -883,6 +897,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
     </script>
-    <script src="index.js"></script>
-
+    <!-- Firebase SDK for Client-side -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="feed.js"></script>
 </html>
