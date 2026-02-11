@@ -110,6 +110,40 @@ async function handleLogin() {
         return;
     }
     
+    // Try admin login via API (for newly registered admins)
+    if (regNo.toLowerCase().startsWith('admin')) {
+        try {
+            const adminResponse = await fetch(`${API_BASE_URL}/admins?username=${encodeURIComponent(regNo)}&password=${encodeURIComponent(idNumber)}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const adminResult = await adminResponse.json();
+            
+            if (adminResult.success && adminResult.data && adminResult.data.length > 0) {
+                const admin = adminResult.data[0];
+                currentUser = {
+                    id: admin.id,
+                    firstName: admin.firstName,
+                    lastName: admin.lastName,
+                    regNumber: admin.username.toUpperCase(),
+                    email: admin.email,
+                    course: 'Administrator',
+                    isAdmin: true
+                };
+                localStorage.setItem('khu_currentUser', JSON.stringify(currentUser));
+                errorMsg.style.display = 'none';
+                document.getElementById('regNo').value = '';
+                document.getElementById('idNumber').value = '';
+                // Redirect to admin page
+                window.location.href = 'admin.html';
+                return;
+            }
+        } catch (adminError) {
+            console.error('Admin login error:', adminError);
+        }
+    }
+    
     try {
         // Fetch all students to find matching credentials
         const response = await fetch(`${API_BASE_URL}/students`, {

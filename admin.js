@@ -527,8 +527,33 @@ async function handleAddAdmin(e) {
             createdAt: new Date().toISOString()
         };
         
+        // Save to localStorage
         admins.push(newAdmin);
         saveAdmins();
+        
+        // Also save to Firebase for persistent access
+        try {
+            const response = await fetch(`${API_BASE_URL}/admins`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    username,
+                    password,
+                    role
+                })
+            });
+            
+            const result = await response.json();
+            if (!result.success) {
+                console.warn('Admin saved locally but not to Firebase:', result.error);
+            }
+        } catch (firebaseError) {
+            console.warn('Firebase save failed, admin saved locally only:', firebaseError);
+        }
+        
         renderAdmins();
         
         showToast('Admin added successfully!', 'success');
