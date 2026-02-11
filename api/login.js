@@ -43,8 +43,32 @@ module.exports = async (req, res) => {
     return res.status(204).send('');
   }
 
+  // Parse request body for Vercel serverless functions
+  let body = {};
+  if (req.body) {
+    body = req.body;
+  } else if (req.rawBody) {
+    // Fallback for different Vercel versions
+    try {
+      body = JSON.parse(req.rawBody);
+    } catch (e) {
+      console.error('Failed to parse rawBody:', e);
+    }
+  } else if (req.buffer) {
+    // Another Vercel body parsing approach
+    try {
+      body = typeof req.buffer === 'string' ? JSON.parse(req.buffer) : req.buffer;
+    } catch (e) {
+      console.error('Failed to parse buffer:', e);
+    }
+  }
+
+  // Debug logging
+  console.log('Request method:', req.method);
+  console.log('Request body:', body);
+
   try {
-    const { method, body } = req;
+    const { method } = req;
 
     // POST - Login authentication
     if (method === 'POST') {
