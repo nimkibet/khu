@@ -555,7 +555,7 @@
     <span class="logout-text">Logout</span>
 </button>
 </body>
-    <script type="module">
+    <script>
         function logout() {
     // 1. Clear the specific user session key
     localStorage.removeItem('khu_user');
@@ -563,6 +563,14 @@
     // 2. Refresh the page to trigger the checkLoginStatus() and show loginPage
     window.location.reload();
 }
+
+        // Export functions to global scope for inline onclick handlers
+        window.showSection = showSection;
+        window.logout = logout;
+        window.openPostModal = openPostModal;
+        window.sendMessage = sendMessage;
+        window.showFeedSection = showFeedSection;
+        window.updateProfileUI = updateProfileUI;
 
         // LOGIN HANDLER
         async function handleLogin() {
@@ -732,10 +740,9 @@ function updateProfileUI(student) {
         function renderCourses() {
             const container = document.getElementById('coursesContainer');
             container.innerHTML = '';
-            courses.forEach(c => {
+            courses.forEach((c, index) => {
                 const el = document.createElement('div');
                 el.className = 'course-card';
-               // Locate inside renderCourses() loop:
                 el.innerHTML = `
                     <div class="course-header">
                         <span class="course-badge">${c.code}</span>
@@ -743,13 +750,22 @@ function updateProfileUI(student) {
                     </div>
                     <div class="course-title">${c.title}</div>
                     <div class="course-info">Instructor: ${c.instructor}</div>
-                    <button onclick="toggleUnits(${courses.indexOf(c)})" style="width:100%; margin-top:10px; padding:8px; cursor:pointer; background:#f0f2f5; border:none; border-radius:4px;">
+                    <button class="toggle-units-btn" data-index="${index}" style="width:100%; margin-top:10px; padding:8px; cursor:pointer; background:#f0f2f5; border:none; border-radius:4px;">
                         Show/Hide Units ▼
                     </button>
-                    <div id="units-${courses.indexOf(c)}" style="display:none; margin-top:10px;">
+                    <div class="units-container" data-index="${index}" style="display:none; margin-top:10px;">
                         ${c.units.map(u => `<div class="unit-item">${u}</div>`).join('')}
                     </div>
                 `;
+                
+                // Add event listener programmatically
+                const toggleBtn = el.querySelector('.toggle-units-btn');
+                const unitsContainer = el.querySelector('.units-container');
+                toggleBtn.addEventListener('click', () => {
+                    unitsContainer.style.display = unitsContainer.style.display === 'none' ? 'block' : 'none';
+                    toggleBtn.textContent = unitsContainer.style.display === 'none' ? 'Show/Hide Units ▼' : 'Hide Units ▲';
+                });
+                
                 container.appendChild(el);
             });
         }
