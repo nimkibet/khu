@@ -37,6 +37,96 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
+// Login API - Handle student/admin login
+app.all('/api/login', async (req, res) => {
+  const { method, body } = req;
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (method === 'OPTIONS') {
+    return res.status(204).send('');
+  }
+
+  try {
+    if (method === 'POST') {
+      const { regNo, idNumber } = body;
+
+      if (!regNo || !idNumber) {
+        return res.status(400).json({ 
+          success: false, 
+          error: 'Registration number and ID number are required' 
+        });
+      }
+
+      const regNoUpper = regNo.trim().toUpperCase();
+
+      // Check hardcoded admin first
+      if (regNoUpper === 'ADMIN' && idNumber === 'admin123') {
+        return res.status(200).json({
+          success: true,
+          user: {
+            id: 'admin',
+            firstName: 'Admin',
+            lastName: 'Administrator',
+            regNumber: 'ADMIN',
+            email: 'admin@khu.ac.ke',
+            course: 'Administrator',
+            isAdmin: true
+          }
+        });
+      }
+
+      // Query Firestore students collection
+      const snapshot = await db.collection('students')
+        .where('regNumber', '==', regNoUpper)
+        .get();
+
+      if (snapshot.empty) {
+        return res.status(401).json({ 
+          success: false, 
+          error: 'Invalid registration number or ID' 
+        });
+      }
+
+      let matchedStudent = null;
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.idNumber === idNumber.trim()) {
+          matchedStudent = { id: doc.id, ...data };
+        }
+      });
+
+      if (!matchedStudent) {
+        return res.status(401).json({ 
+          success: false, 
+          error: 'Invalid registration number or ID' 
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        user: {
+          id: matchedStudent.id,
+          firstName: matchedStudent.firstName,
+          lastName: matchedStudent.lastName,
+          regNumber: matchedStudent.regNumber,
+          email: matchedStudent.email,
+          course: matchedStudent.course,
+          yearOfStudy: matchedStudent.yearOfStudy,
+          isAdmin: false
+        }
+      });
+    }
+
+    return res.status(405).json({ success: false, error: 'Method not allowed' });
+  } catch (error) {
+    console.error('Login API Error:', error);
+    return res.status(500).json({ success: false, error: error.message || 'Server error' });
+  }
+});
+
 // API Routes
 app.all('/api/students', async (req, res) => {
   const { method, query, body } = req;
