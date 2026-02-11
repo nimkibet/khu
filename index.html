@@ -617,8 +617,10 @@
                         // Admin redirects to admin.html
                         window.location.href = 'admin.html';
                     } else if (user.role === 'student' || !user.isAdmin) {
-                        // Student redirects to optimized feed at feed.html
-                        window.location.href = 'feed.html';
+                        // Student stays on index.html - show feed section
+                        document.getElementById('loginPage').style.display = 'none';
+                        showFeedSection();
+                        updateProfileUI(user);
                     } else {
                         // Default/Fallback - no role matched
                         console.error('Unknown user role:', user.role);
@@ -648,6 +650,25 @@
 
         // Attach event listener using module scope
         document.getElementById('loginBtn').addEventListener('click', handleLogin);
+
+        // Helper function to show feed section after login
+        function showFeedSection() {
+            // Hide all sections first
+            document.querySelectorAll('.main-content').forEach(s => s.classList.remove('active'));
+            
+            // Show feed section
+            const feedSection = document.getElementById('feed');
+            if (feedSection) {
+                feedSection.classList.add('active');
+            }
+            
+            // Set Feed nav button as active
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            const feedBtn = document.querySelector(".nav-btn[onclick*='feed']");
+            if (feedBtn) {
+                feedBtn.classList.add('active');
+            }
+        }
     </script>
 function updateProfileUI(student) {
     const nameDisplay = document.getElementById('displayUserName');
