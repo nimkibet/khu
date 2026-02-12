@@ -1,32 +1,50 @@
-i// Login API - Firebase Admin SDK Backend
+// Login API - Firebase Admin SDK Backend
 require('dotenv').config();
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin
 let firebaseAdmin;
-if (admin.apps.length === 0) {
-  const serviceAccount = {
-    type: 'service_account',
-    project_id: process.env.FIREBASE_PROJECT_ID,
-    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-    private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    client_id: process.env.FIREBASE_CLIENT_ID,
-    auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-    token_uri: 'https://oauth2.googleapis.com/token',
-    auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-    client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
-  };
-
-  firebaseAdmin = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DATABASE_URL
-  });
-} else {
-  firebaseAdmin = admin;
+let firebaseInitError = null;
+try {
+  if (admin.apps.length === 0) {
+    console.log('Initializing Firebase Admin SDK...');
+    const serviceAccount = {
+      type: 'service_account',
+      project_id: process.env.FIREBASE_PROJECT_ID,
+      private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      client_id: process.env.FIREBASE_CLIENT_ID,
+      auth_uri: 'https://accounts.google.com/o/oauth2/auth',
+      token_uri: 'https://oauth2.googleapis.com/token',
+      auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
+      client_x509_cert_url: process.env.FIREBASE_CLIENT_CERT_URL
+    };
+    
+    console.log('Service account project_id:', process.env.FIREBASE_PROJECT_ID);
+    
+    firebaseAdmin = admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      databaseURL: process.env.FIREBASE_DATABASE_URL
+    });
+    console.log('Firebase Admin SDK initialized successfully');
+  } else {
+    firebaseAdmin = admin;
+  }
+} catch (initError) {
+  console.error('Firebase Admin initialization error:', initError);
+  firebaseInitError = initError.message || 'Firebase initialization failed';
 }
 
-const db = firebaseAdmin.firestore();
+let db = null;
+if (!firebaseInitError) {
+  try {
+    db = firebaseAdmin.firestore();
+  } catch (dbError) {
+    console.error('Firestore initialization error:', dbError);
+    firebaseInitError = dbError.message || 'Firestore initialization failed';
+  }
+}
 
 // CORS headers
 const setCorsHeaders = (res) => {
@@ -43,8 +61,26 @@ module.exports = async (req, res) => {
     return res.status(204).send('');
   }
 
+  // Check if Firebase was initialized successfully
+  if (firebaseInitError) {
+    console.error('Firebase init error:', firebaseInitError);
+    return res.status(500).json({ 
+      success: false, 
+      error: 'Server configuration error: ' + firebaseInitError 
+    });
+  }
+  
+  // Debug: Log environment variables (without exposing sensitive data)
+  console.log('FIREBASE_PROJECT_ID set:', !!process.env.FIREBASE_PROJECT_ID);
+  console.log('FIREBASE_CLIENT_EMAIL set:', !!process.env.FIREBASE_CLIENT_EMAIL);
+  console.log('FIREBASE_DATABASE_URL set:', !!process.env.FIREBASE_DATABASE_URL);
+  
   // Parse request body for Vercel serverless functions
   let body = {};
+  console.log('req.body:', req.body);
+  console.log('req.rawBody:', req.rawBody);
+  console.log('req.buffer:', req.buffer);
+  
   if (req.body) {
     body = req.body;
   } else if (req.rawBody) {
@@ -62,10 +98,8 @@ module.exports = async (req, res) => {
       console.error('Failed to parse buffer:', e);
     }
   }
-
-  // Debug logging
-  console.log('Request method:', req.method);
-  console.log('Request body:', body);
+  
+  console.log('Parsed body:', body);
 
   try {
     const { method } = req;
@@ -76,6 +110,7 @@ module.exports = async (req, res) => {
 
       // Validation
       if (!regNo || !idNumber) {
+        console.error('Missing credentials - regNo:', regNo, 'idNumber:', idNumber);
         return res.status(400).json({ 
           success: false, 
           error: 'Registration number and ID number are required' 
