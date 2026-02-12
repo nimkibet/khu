@@ -325,24 +325,52 @@
 
         function submitPost() {
             const content = document.getElementById('postContent').value.trim();
-            if (!content) return;
+            if (!content) {
+                alert('Please enter some content for your post.');
+                return;
+            }
             
             const user = JSON.parse(localStorage.getItem('khu_user') || '{}');
             const name = user.firstName ? user.firstName + ' ' + user.lastName : 'Guest User';
+            const regNo = user.regNumber || '';
             
-            const postCard = document.createElement('div');
-            postCard.className = 'post-card';
-            postCard.innerHTML = `
-                <div class="post-header">
-                    <div class="user-avatar">${name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}</div>
-                    <div class="post-info"><h4>${name}</h4><div class="post-meta">Just now</div></div>
-                </div>
-                <div class="post-content">${escapeHtml(content)}</div>
-            `;
-            
-            const container = document.getElementById('postsContainer');
-            container.insertBefore(postCard, container.firstChild);
-            closePostModal();
+            // Call the API to save the post
+            fetch('/api/posts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    content: content,
+                    authorName: name,
+                    regNo: regNo
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Create post card locally
+                    const postCard = document.createElement('div');
+                    postCard.className = 'post-card';
+                    postCard.innerHTML = `
+                        <div class="post-header">
+                            <div class="user-avatar">${name.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}</div>
+                            <div class="post-info"><h4>${name}</h4><div class="post-meta">Just now</div></div>
+                        </div>
+                        <div class="post-content">${escapeHtml(content)}</div>
+                    `;
+                    
+                    const container = document.getElementById('postsContainer');
+                    if (container) {
+                        container.insertBefore(postCard, container.firstChild);
+                    }
+                    closePostModal();
+                } else {
+                    alert('Failed to save post: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(err => {
+                console.error('Submit post error:', err);
+                alert('Failed to save post. Please try again.');
+            });
         }
 
         // Escape HTML
