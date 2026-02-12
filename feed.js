@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Initialize Firebase for real-time updates
 async function initializeFirebase() {
     try {
-        // Check if Firebase is already loaded globally
+        // Wait for Firebase SDK to load
         if (typeof firebase !== 'undefined' && firebase.apps) {
             try {
                 if (!firebase.apps.length) {
@@ -40,6 +40,9 @@ async function initializeFirebase() {
                 
                 db = firebase.firestore();
                 console.log('Firebase initialized for real-time feed');
+                
+                // Start the real-time listener once Firebase is ready
+                startRealtimeListener();
             } catch (error) {
                 console.log('Firebase initialization error:', error.message);
             }
@@ -74,8 +77,11 @@ async function initializeFeed() {
     postModal = document.getElementById('postModal');
     postTextarea = document.getElementById('postContent');
     charCount = document.getElementById('charCount');
-    postBtn = document.getElementById('submitPostBtn');
-    closeModalBtn = document.getElementById('closePostModal');
+    
+    // Get the Post button from the modal (second button is Post)
+    const modalButtons = document.querySelectorAll('#postModal button');
+    postBtn = modalButtons.length > 1 ? modalButtons[1] : null;
+    closeModalBtn = modalButtons.length > 0 ? modalButtons[0] : null;
 
     // Check if user is logged in
     const savedUser = localStorage.getItem('khu_currentUser') || localStorage.getItem('khu_user');
@@ -88,13 +94,13 @@ async function initializeFeed() {
         }
     }
 
-    // Start real-time listener if Firebase is available
-    if (db) {
+    // If Firebase wasn't ready when initializeFirebase ran, try again
+    if (db && !postsUnsubscribe) {
         startRealtimeListener();
-    } else {
+    } else if (!db) {
         // Fallback: Load posts via API
         setTimeout(() => {
-            if (db) {
+            if (db && !postsUnsubscribe) {
                 startRealtimeListener();
             } else {
                 fetchPosts();
@@ -116,20 +122,27 @@ function startRealtimeListener() {
     }
 
     try {
-        const postsRef = db.collection('posts');
-        const query = postsRef.orderBy('timestamp', 'desc').limit(20);
+        const { collection, query, orderBy, limit } = firebase.firestore;
+        const postsRef = collection(db, 'posts');
+        const postsQuery = query(postsRef, orderBy('timestamp', 'desc'), limit(20));
 
-        postsUnsubscribe = query.onSnapshot(
+        postsUnsubscribe = onSnapshot(postsQuery, 
             (snapshot) => {
-                console.log('Real-time feed update received');
+                console.log('Real-time feed update received, docs:', snapshot.size);
                 const posts = [];
                 
                 snapshot.forEach((doc) => {
                     const data = doc.data();
                     // Convert Firestore timestamp to Date
                     let timestamp = data.timestamp;
-                    if (timestamp && timestamp.toDate) {
+                    if (timestamp && typeof timestamp.toDate === 'function') {
                         timestamp = timestamp.toDate();
+                    } else if (timestamp instanceof Date) {
+                        timestamp = timestamp;
+                    } else if (typeof timestamp === 'string') {
+                        timestamp = new Date(timestamp);
+                    } else {
+                        timestamp = new Date();
                     }
                     
                     posts.push({
@@ -268,13 +281,13 @@ function updateCharCount() {
     
     if (length > 280) {
         charCount.style.color = '#e41e3f';
-        postBtn.disabled = true;
+        if (postBtn) postBtn.disabled = true;
     } else if (length > 260) {
         charCount.style.color = '#f39c12';
-        postBtn.disabled = false;
+        if (postBtn) postBtn.disabled = false;
     } else {
         charCount.style.color = '#65676b';
-        postBtn.disabled = false;
+        if (postBtn) postBtn.disabled = false;
     }
 }
 
@@ -298,8 +311,10 @@ async function handleCreatePost() {
     }
 
     // Disable button during submission
-    postBtn.disabled = true;
-    postBtn.textContent = 'Posting...';
+    if (postBtn) {
+        postBtn.disabled = true;
+        postBtn.textContent = 'Posting...';
+    }
 
     try {
         const firstName = currentUser.firstName || currentUser.name?.split(' ')[0] || 'Student';
@@ -331,8 +346,10 @@ async function handleCreatePost() {
         console.error('Error creating post:', error);
         showToast(error.message || 'Failed to create post', 'error');
     } finally {
-        postBtn.disabled = false;
-        postBtn.textContent = 'Post';
+        if (postBtn) {
+            postBtn.disabled = false;
+            postBtn.textContent = 'Post';
+        }
     }
 }
 
@@ -343,8 +360,8 @@ function renderPosts(posts) {
     if (!posts || posts.length === 0) {
         postsContainer.innerHTML = `
             <div class="empty-state" style="text-align: center; padding: 40px; color: #65676b;">
-                <div style="font-size: 48px; margin-bottom: 16px;">🐦</div>
-                <p>No posts yet. Be the first to post!</p>
+                <div style="font-size: 48px; margin-bottom: 16px;">📭</div>
+                <p>No posts yet. Be the first to share something!</p>
             </div>
         `;
         return;

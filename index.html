@@ -116,19 +116,12 @@
                 <div class="semester-banner"><h2>Fall 2025 Semester</h2><p>Registration for Spring 2026 starts Dec 15</p></div>
                 <div class="create-post">
                     <div style="display: flex; align-items: center;">
-                        <div class="user-avatar">GU</div>
+                        <div class="user-avatar" id="postAvatar">GU</div>
                         <input type="text" class="post-input" placeholder="What's on your mind?" onclick="openPostModal()" readonly>
                     </div>
                 </div>
                 <div id="postsContainer">
-                    <div class="post-card">
-                        <div class="post-header"><div class="user-avatar">SK</div><div class="post-info"><h4>Dr. Sarah Kimani</h4><div class="post-meta">2 hours ago</div></div></div>
-                        <div class="post-content">Reminder: CS302 Assignment 3 is due this Friday at 11:59 PM. No extensions will be granted.</div>
-                    </div>
-                    <div class="post-card">
-                        <div class="post-header"><div class="user-avatar">SC</div><div class="post-info"><h4>Student Council</h4><div class="post-meta">5 hours ago</div></div></div>
-                        <div class="post-content">Tech Symposium 2025 registration is now open! Join us for a week of innovation.</div>
-                    </div>
+                    <!-- Posts will be loaded dynamically from Firestore -->
                 </div>
             </div>
 
@@ -185,7 +178,7 @@
                 <span id="charCount" style="color: #65676b; font-size: 13px;">0/280</span>
                 <div>
                     <button onclick="closePostModal()" style="padding: 8px 16px; border: 1px solid #ddd; border-radius: 6px; background: white; cursor: pointer; margin-right: 8px;">Cancel</button>
-                    <button onclick="submitPost()" style="padding: 8px 16px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer;">Post</button>
+                    <button onclick="handleCreatePost()" style="padding: 8px 16px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer;">Post</button>
                 </div>
             </div>
         </div>
@@ -196,6 +189,24 @@
         <span style="font-size: 20px;">➔</span>
         <span class="logout-text">Logout</span>
     </button>
+
+    <!-- Firebase Configuration - MUST be before Firebase SDK -->
+    <script>
+        window.FIREBASE_API_KEY = "AIzaSyDGDjCx7eUgpurU64fH9NkhxVErei8Ug6I";
+        window.FIREBASE_AUTH_DOMAIN = "khu-portal.firebaseapp.com";
+        window.FIREBASE_PROJECT_ID = "khu-portal";
+        window.FIREBASE_STORAGE_BUCKET = "khu-portal.firebasestorage.app";
+        window.FIREBASE_MESSAGING_SENDER_ID = "31515014542";
+        window.FIREBASE_APP_ID = "1:31515014542:web:a02fb67aa28164b4c4e0df";
+    </script>
+
+    <!-- Firebase SDK Scripts (must load after config) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <!-- Feed functionality -->
+    <script src="feed.js"></script>
 </body>
 
     <script>
